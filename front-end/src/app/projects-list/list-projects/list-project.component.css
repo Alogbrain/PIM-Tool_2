@@ -1,0 +1,16 @@
+/*table th{*/
+/*  height: 32px;*/
+/*  padding-left: 10px;*/
+/*  font-weight: normal;*/
+/*}*/
+#pagination-custom li a{
+  height: 32px;
+}
+tr td{
+  font-family: "Segoe UI Semibold";
+  font-size: 14pt;
+  color: #666666;
+}
+thead td{
+  height: 32px;
+}

@@ -1,0 +1,28 @@
+.navbar-brand{
+  padding: 0px;
+  margin: 10px auto;
+  cursor: pointer;
+}
+.navbar-text{
+  font-weight: bolder;
+  font-size: large;
+}
+#language-local{
+  padding-top: 15px
+}
+#language-local a{
+  cursor: pointer;
+  text-decoration: none;
+}
+#action-bar {
+  margin-left: 50px;
+}
+#action-bar li{
+  cursor: pointer;
+}
+.navbar-right-custom{
+  display: flex;
+  float: right;
+  align-items:end;
+}
+

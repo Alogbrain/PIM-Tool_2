@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<templates>
+<template autoinsert="true" context="java" deleted="false" description="File header for technical components" enabled="true" name="header_technical">/*&#13;
+ * ${enclosing_type}&#13;
+ * &#13;
+ * Project: IRIS&#13;
+ * &#13;
+ * Copyright 2012 by WIPO&#13;
+ * All rights reserved.&#13;
+ *&#13;
+ * This software is the confidential and proprietary information&#13;
+ * of WIPO. ("Confidential Information"). You&#13;
+ * shall not disclose such Confidential Information and shall&#13;
+ * use it only in accordance with the terms of the license&#13;
+ * agreement you entered into with WIPO.&#13;
+ */&#13;
+</template>
+</templates>
