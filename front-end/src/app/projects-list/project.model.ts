@@ -5,7 +5,7 @@ export interface Project {
   name: string;
   customer: string;
   group: Group;
-  members: string[];
+  members: string;
   status: string;
   startDate: string;
   endDate: string;

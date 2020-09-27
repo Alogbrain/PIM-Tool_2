@@ -22,9 +22,10 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   queryParamsSubscription: Subscription;
   id: number;
   project: Project = {
-    projectNumber: null, endDate: '', startDate: '', status: 'New', members: [], group: {id: null},
+    projectNumber: null, endDate: '', startDate: '', status: 'New', members: '', group: {id: null},
     customer: '', name: ''
   };
+  error: string;
   groups: Group[];
 
   statuses = ['New', 'Inprogress', 'Finished', 'Planned'];
@@ -86,6 +87,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
           this.projectForm.reset();
           this.router.navigate(['projects/projects-list']);
         }, rej => {
+          this.error = rej.message;
           console.log('FAIL');
         }
       );

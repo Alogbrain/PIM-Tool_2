@@ -19,7 +19,7 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   listProjectsForm: FormGroup;
   criteria = '';
   status = '';
-  statuses = ['New', 'Inprogress', 'Finished', 'Planned'];
+  statuses = ['', 'New', 'Inprogress', 'Finished', 'Planned'];
 
   constructor(private projectService: ProjectService,
               private http: HttpClient) {
@@ -55,7 +55,6 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   }
 
   deleteProject(id: number): void {
-    console.log(id);
     this.projectService.deleteProject(id).subscribe(
       res => {
         console.log('SUCCESS');

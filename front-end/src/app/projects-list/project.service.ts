@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import {Project} from './project.model';
-import {map} from 'rxjs/operators';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {catchError, map} from 'rxjs/operators';
+import {HttpClient, HttpErrorResponse, HttpParams, HttpResponse} from '@angular/common/http';
 import {Group} from './group.model';
 
 @Injectable()
@@ -61,7 +61,14 @@ export class ProjectService {
     // this.projects.push(project);
     // this.projectsChanged.next(this.projects.slice());
     const url = 'api/projects/create-project';
-    return  this.http.post(url, project);
+    return  this.http.post(url, project).pipe(catchError(this.handleError));
+  }
+  handleError(err): any{
+    if ( err instanceof  HttpErrorResponse){
+      return throwError(err.message);
+    }else{
+      return throwError(err);
+    }
   }
   deleteProject(index): Observable<any>{
     const url = 'api/projects/delete-project';

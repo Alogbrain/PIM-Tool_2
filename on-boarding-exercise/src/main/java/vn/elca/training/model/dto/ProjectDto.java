@@ -14,6 +14,7 @@ public class ProjectDto {
     private Integer projectNumber;
     private String name;
     private StatusProject status;
+    private String members;
     private String customer;
     private String startDate;
     private GroupDto group;
@@ -47,6 +48,14 @@ public class ProjectDto {
         return group;
     }
 
+    public String getMembers() {
+        return members;
+    }
+
+    public void setMembers(String members) {
+        this.members = members;
+    }
+
     @Override
     public String toString() {
         return "ProjectDto{" +
@@ -54,6 +63,7 @@ public class ProjectDto {
                 ", projectNumber=" + projectNumber +
                 ", name='" + name + '\'' +
                 ", status=" + status +
+                ", members='" + members + '\'' +
                 ", customer='" + customer + '\'' +
                 ", startDate='" + startDate + '\'' +
                 ", group=" + group +

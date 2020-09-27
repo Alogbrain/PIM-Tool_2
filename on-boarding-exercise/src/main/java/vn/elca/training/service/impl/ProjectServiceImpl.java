@@ -9,6 +9,7 @@ import org.springframework.expression.spel.InternalParseException;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+import vn.elca.training.exception.NumberExistException;
 import vn.elca.training.model.entity.QGroup;
 import vn.elca.training.model.entity.QProject;
 import vn.elca.training.model.entity.StatusProject;
@@ -39,35 +40,37 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> findByCriteria(String criteria, StatusProject status) {
 
-        if(status == null){
+        if (status == null && !criteria.equals("")) {
             try {
-                Long id = Long.parseLong(criteria);
+                Integer id = Integer.parseInt(criteria);
                 return new JPAQuery<Project>(em)
                         .from(QProject.project)
-                        .where(QProject.project.id.eq(id))
+                        .where(QProject.project.projectNumber.eq(id))
                         .fetch();
             } catch (NumberFormatException e) {
                 System.out.println(e);
             }
             return new JPAQuery<Project>(em)
                     .from(QProject.project)
-//                .innerJoin(QProject.project.group, QGroup.group).fetchJoin()
                     .where(QProject.project.name.equalsIgnoreCase(criteria).or(QProject.project.customer.equalsIgnoreCase(criteria)))
                     .fetch();
-        }
-        else{
+        } else if (status != null && criteria.equals("")) {
+            return new JPAQuery<Project>(em)
+                    .from(QProject.project)
+                    .where(QProject.project.status.eq(status))
+                    .fetch();
+        } else {
             try {
-                Long id = Long.parseLong(criteria);
+                Integer id = Integer.parseInt(criteria);
                 return new JPAQuery<Project>(em)
                         .from(QProject.project)
-                        .where(QProject.project.id.eq(id).and(QProject.project.status.eq(status)))
+                        .where(QProject.project.projectNumber.eq(id).and(QProject.project.status.eq(status)))
                         .fetch();
             } catch (NumberFormatException e) {
                 System.out.println(e);
             }
             return new JPAQuery<Project>(em)
                     .from(QProject.project)
-//                .innerJoin(QProject.project.group, QGroup.group).fetchJoin()
                     .where((QProject.project.name.equalsIgnoreCase(criteria)
                             .or(QProject.project.customer.equalsIgnoreCase(criteria)))
                             .and(QProject.project.status.eq(status)))
@@ -76,13 +79,21 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public List<Project> findById(Long id) {
+    public List<Project> findById(Integer id) {
         return projectRepository.findProjectById(id);
     }
 
     @Override
     public void createNewProject(Project project) {
-        this.projectRepository.save(project);
+        Project currProject = new JPAQuery<Project>(em)
+                .from(QProject.project)
+                .where(QProject.project.projectNumber.eq(project.getProjectNumber()))
+                .fetchFirst();
+        if (currProject == null) {
+            this.projectRepository.save(project);
+        } else {
+            throw new NumberExistException(project.getProjectNumber());
+        }
     }
 
     @Override
@@ -95,8 +106,12 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void updateProject(Long id, Project crrProject) {
-        Project newProject = projectRepository.findOne(id);
+    public void updateProject(Integer id, Project crrProject) {
+        Project newProject =  new JPAQuery<Project>(em)
+                .from(QProject.project)
+                .where(QProject.project.projectNumber.eq(id))
+                .fetchFirst();
+        crrProject.setId(newProject.getId());
         newProject = crrProject;
         projectRepository.save(newProject);
     }
