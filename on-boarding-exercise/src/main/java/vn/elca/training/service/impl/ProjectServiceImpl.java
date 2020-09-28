@@ -1,15 +1,15 @@
 package vn.elca.training.service.impl;
 
-import java.util.ArrayList;
+import java.beans.Expression;
 import java.util.List;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.InternalParseException;
 import org.springframework.stereotype.Service;
 
-import org.springframework.transaction.annotation.Transactional;
-import vn.elca.training.model.entity.QGroup;
+import vn.elca.training.model.exception.NumberExistException;
 import vn.elca.training.model.entity.QProject;
 import vn.elca.training.model.entity.StatusProject;
 import vn.elca.training.repository.ProjectRepository;
@@ -39,50 +39,74 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> findByCriteria(String criteria, StatusProject status) {
 
-        if(status == null){
+//        BooleanExpression expr = QProject.project.id.isNotNull();
+//
+//        if (StringUtils.isNotBlank(criteria)) {
+//            expr = expr.and(QProject.project.name.equalsIgnoreCase(criteria).or(QProject.project.customer.equalsIgnoreCase(criteria))
+//                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase()));
+//        }
+
+
+
+
+
+        if (status == null && !criteria.equals("")) {
             try {
-                Long id = Long.parseLong(criteria);
+                Integer id = Integer.parseInt(criteria);
                 return new JPAQuery<Project>(em)
                         .from(QProject.project)
-                        .where(QProject.project.id.eq(id))
+                        .where(QProject.project.projectNumber.eq(id))
                         .fetch();
             } catch (NumberFormatException e) {
                 System.out.println(e);
             }
             return new JPAQuery<Project>(em)
                     .from(QProject.project)
-//                .innerJoin(QProject.project.group, QGroup.group).fetchJoin()
                     .where(QProject.project.name.equalsIgnoreCase(criteria).or(QProject.project.customer.equalsIgnoreCase(criteria)))
+//                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase()))
                     .fetch();
-        }
-        else{
+        } else if (status != null && criteria.equals("")) {
+            return new JPAQuery<Project>(em)
+                    .from(QProject.project)
+                    .where(QProject.project.status.eq(status))
+                    .fetch();
+        } else {
             try {
-                Long id = Long.parseLong(criteria);
+                Integer id = Integer.parseInt(criteria);
                 return new JPAQuery<Project>(em)
                         .from(QProject.project)
-                        .where(QProject.project.id.eq(id).and(QProject.project.status.eq(status)))
+                        .where(QProject.project.projectNumber.eq(id).and(QProject.project.status.eq(status)))
                         .fetch();
             } catch (NumberFormatException e) {
                 System.out.println(e);
             }
             return new JPAQuery<Project>(em)
                     .from(QProject.project)
-//                .innerJoin(QProject.project.group, QGroup.group).fetchJoin()
                     .where((QProject.project.name.equalsIgnoreCase(criteria)
                             .or(QProject.project.customer.equalsIgnoreCase(criteria)))
                             .and(QProject.project.status.eq(status)))
+                    .orderBy(QProject.project.projectNumber.asc())
+
                     .fetch();
         }
     }
 
     @Override
-    public List<Project> findById(Long id) {
+    public Project findById(Integer id) {
         return projectRepository.findProjectById(id);
     }
 
     @Override
     public void createNewProject(Project project) {
-        this.projectRepository.save(project);
+        Project currProject = new JPAQuery<Project>(em)
+                .from(QProject.project)
+                .where(QProject.project.projectNumber.eq(project.getProjectNumber()))
+                .fetchFirst();
+        if (currProject == null) {
+            this.projectRepository.save(project);
+        } else {
+            throw new NumberExistException();
+        }
     }
 
     @Override
@@ -90,14 +114,17 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = new JPAQuery<Project>(em)
                 .from(QProject.project)
                 .where(QProject.project.projectNumber.eq(id))
-                .fetch().get(0);
+                .fetchFirst();
         projectRepository.delete(project);
     }
 
     @Override
-    public void updateProject(Long id, Project crrProject) {
-        Project newProject = projectRepository.findOne(id);
-        newProject = crrProject;
-        projectRepository.save(newProject);
+    public void updateProject(Integer id, Project crrProject) {
+        Project newProject =  new JPAQuery<Project>(em)
+                .from(QProject.project)
+                .where(QProject.project.projectNumber.eq(id))
+                .fetchFirst();
+        crrProject.setId(newProject.getId());
+        projectRepository.save(crrProject);
     }
 }

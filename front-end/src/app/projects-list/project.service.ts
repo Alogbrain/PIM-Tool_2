@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 
-import {Observable, Subject} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import {Project} from './project.model';
-import {map} from 'rxjs/operators';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {catchError, map} from 'rxjs/operators';
+import {HttpClient, HttpErrorResponse, HttpParams, HttpResponse} from '@angular/common/http';
 import {Group} from './group.model';
 
 @Injectable()
@@ -39,6 +39,7 @@ export class ProjectService {
         })
       );
   }
+
   searchProjects(criteria: string, status: string): Observable<Project[]> {
     const url = 'api/projects/search';
     let params = new HttpParams();
@@ -46,6 +47,7 @@ export class ProjectService {
     params = params.append('status', status);
     return this.http.post<Project[]>(url, params);
   }
+
   getProject(index: number): Observable<Project> {
     // return this.projects[index];
     const url = 'api/projects/queryById/' + index;
@@ -61,17 +63,32 @@ export class ProjectService {
     // this.projects.push(project);
     // this.projectsChanged.next(this.projects.slice());
     const url = 'api/projects/create-project';
-    return  this.http.post(url, project);
+    return this.http.post(url, project).pipe(catchError(this.handleError));
   }
-  deleteProject(index): Observable<any>{
+
+  handleError(err): any {
+    if (err instanceof HttpErrorResponse) {
+      return throwError(err.error);
+    } else {
+      return throwError(err);
+    }
+  }
+
+  deleteProject(index): Observable<any> {
     const url = 'api/projects/delete-project';
-    let params = new HttpParams().append('id', index );
-    return  this.http.post(url, params);
+    let params = new HttpParams().append('id', index);
+    return this.http.post(url, params);
   }
+
+  deleteProjectList(list): Observable<any> {
+    const url = 'api/projects/delete-project-list';
+    return this.http.post(url, list);
+  }
+
   updateProject(index: number, newProject: Project): Observable<any> {
     // this.projects[index] = newProject;
     // this.projectsChanged.next(this.projects.slice());
     const url = 'api/projects/update-project/' + index;
-    return  this.http.post(url,  newProject);
+    return this.http.post(url, newProject).pipe(catchError(this.handleError));
   }
 }

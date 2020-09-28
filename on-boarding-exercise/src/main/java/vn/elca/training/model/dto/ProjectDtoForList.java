@@ -1,15 +1,8 @@
 package vn.elca.training.model.dto;
 
-import vn.elca.training.model.entity.Group;
 import vn.elca.training.model.entity.StatusProject;
 
-import java.time.LocalDate;
-
-/**
- * @author gtn
- *
- */
-public class ProjectDto {
+public class ProjectDtoForList {
     private Long id;
     private Integer projectNumber;
     private String name;
@@ -17,8 +10,19 @@ public class ProjectDto {
     private String members;
     private String customer;
     private String startDate;
-    private GroupDto group;
-    private String endDate;
+
+    @Override
+    public String toString() {
+        return "ProjectDtoForList{" +
+                "id=" + id +
+                ", projectNumber=" + projectNumber +
+                ", name='" + name + '\'' +
+                ", status=" + status +
+                ", members='" + members + '\'' +
+                ", customer='" + customer + '\'' +
+                ", startDate='" + startDate + '\'' +
+                '}';
+    }
 
     public Long getId() {
         return id;
@@ -36,16 +40,20 @@ public class ProjectDto {
         this.projectNumber = projectNumber;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public StatusProject getStatus() {
         return status;
     }
 
     public void setStatus(StatusProject status) {
         this.status = status;
-    }
-
-    public GroupDto getGroup() {
-        return group;
     }
 
     public String getMembers() {
@@ -56,49 +64,12 @@ public class ProjectDto {
         this.members = members;
     }
 
-    @Override
-    public String toString() {
-        return "ProjectDto{" +
-                "id=" + id +
-                ", projectNumber=" + projectNumber +
-                ", name='" + name + '\'' +
-                ", status=" + status +
-                ", members='" + members + '\'' +
-                ", customer='" + customer + '\'' +
-                ", startDate='" + startDate + '\'' +
-                ", group=" + group +
-                ", endDate='" + endDate + '\'' +
-                '}';
-    }
-
-    public void setGroup(Group group) {
-        GroupDto groupDto = new GroupDto();
-        groupDto.setId(group.getId());
-        this.group = groupDto;
-    }
-
-    public String getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
-    }
-
     public String getCustomer() {
         return customer;
     }
 
     public void setCustomer(String customer) {
         this.customer = customer;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getStartDate() {
@@ -108,6 +79,4 @@ public class ProjectDto {
     public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
-
-
 }

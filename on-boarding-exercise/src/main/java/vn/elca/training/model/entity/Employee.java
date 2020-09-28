@@ -13,7 +13,7 @@ public class Employee implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
-    @Column
+    @Column(unique = true)
     private String visa;
     @Column
     private String firstName;
@@ -27,12 +27,9 @@ public class Employee implements Serializable {
     //    @ManyToOne
 //    @JoinColumn(name = "group_id")
 //    private Group group;
-    @OneToMany(mappedBy = "groupLeader", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "groupLeader")
     private Set<Group> group = new HashSet<>();
-    @ManyToMany
-    @JoinTable(name = "employee_project",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id"))
+    @ManyToMany(mappedBy = "employees")
     private Set<Project> projects = new HashSet<>();
 
     public Employee(String visa, Set<Group> group, Set<Project> projects) {
@@ -123,20 +120,8 @@ public class Employee implements Serializable {
         this.version = version;
     }
 
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "id=" + id +
-                ", visa='" + visa + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", birthDate=" + birthDate +
-                ", version=" + version +
-                ", group=" + group +
-                ", projects=" + projects +
-                '}';
-    }
-//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+    //    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 //    @JoinTable(name = "employee_role",
 //        joinColumns = @JoinColumn(name = "employee_id"),
 //        inverseJoinColumns = @JoinColumn(name = "role_id"))

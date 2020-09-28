@@ -1,9 +1,7 @@
 package vn.elca.training.model.entity;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -23,8 +21,11 @@ public class Project {
     @JoinColumn(name = "group_id")
     private Group group;
     //
-    @ManyToMany(mappedBy = "projects", fetch = FetchType.LAZY)
-    private Set<Employee> employees = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "project_employee",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "employee_id"))
+    private List<Employee> employees = new ArrayList<>();
     @Column(unique = true)
     private Integer projectNumber;
     @Column(nullable = false)
@@ -65,7 +66,7 @@ public class Project {
         this.startDate = startDate;
     }
 
-    public Project(Long id, Group group, Set<Employee> employees, Integer projectNumber, String name, String customer,
+    public Project(Long id, Group group, List<Employee> employees, Integer projectNumber, String name, String customer,
                    StatusProject status, LocalDate startDate, LocalDate endDate, Integer version) {
         this.id = id;
         this.group = group;
@@ -151,11 +152,11 @@ public class Project {
         this.version = version;
     }
 
-    public Set<Employee> getEmployees() {
+    public List<Employee> getEmployees() {
         return employees;
     }
 
-    public void setEmployees(Set<Employee> employees) {
+    public void setEmployees(List<Employee> employees) {
         this.employees = employees;
     }
 

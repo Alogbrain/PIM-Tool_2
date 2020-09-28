@@ -1,10 +1,10 @@
 <div class="col-md-10" style="border-left: 1px solid gray;">
-  <div style="font-weight: bold; color: #666666">{{!editMode? 'New Project': 'Edit Project Information'}}</div>
+  <div style="font-weight: bold; color: #666666">{{!editMode ? 'New Project' : 'Edit Project Information'}}</div>
   <hr>
   <form [formGroup]="projectForm" (ngSubmit)="onSubmit()" class="form-horizontal">
     <div *ngIf="!projectForm.valid && isAlert" class="alert alert-danger alert-dismissible show ">
       <strong>Please enter all the mandatory fields(*)</strong>
-      <button type="button" class="close" (click)="onCancelAlert()" >
+      <button type="button" class="close" (click)="onCancelAlert()">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
@@ -12,13 +12,11 @@
       <label for="projectNumber" class="col-md-2 control-label" style="padding-right: 0px">Project Number</label>
       <div class="col-md-3">
         <input type="number" [attr.disabled]="editMode ? 'disabled' : null" id="projectNumber" class="form-control"
-               formControlName="number" pattern="^[1-9]+[0-9]*$" [(ngModel)]="project.projectNumber" >
+               formControlName="number" pattern="^[1-9]+[0-9]*$" [(ngModel)]="project.projectNumber">
       </div>
-      <span
-        *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched"
-        class="help-block">
-        The project number id invalid. Please select a different project number
-      </span>
+      <!--      *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched"-->
+      <span class="help-block" *ngIf="projectForm.get('number').errors['numberProjectError']">
+        {{projectForm.get('number').errors['numberProjectError']}}</span>
     </div>
     <div class="form-group required">
       <label for="projectName" class="col-md-2 control-label">Project name</label>
@@ -64,12 +62,19 @@
         <input type="text" id="member" class="form-control" formControlName="members"
                [(ngModel)]="project.members">
       </div>
+      <div class="row">
+      <span
+        *ngIf="error"
+        class="help-block">
+        {{error}}
+      </span>
+      </div>
     </div>
     <div class="form-group required">
       <label for="status" class="col-md-2 control-label">Status</label>
       <div class="col-md-3">
         <select class="form-control" id="status" formControlName="status" [(ngModel)]="project.status">
-          <option *ngFor="let status of statuses" [ngValue]="status" >{{status}}</option>
+          <option *ngFor="let status of statuses" [ngValue]="status">{{status}}</option>
         </select>
       </div>
       <span
@@ -90,7 +95,7 @@
           Missing start date
         </span>
       </div>
-      <label for="endDate" class="col-md-2 control-label" style="margin-left: 80px">End date</label>
+      <label for="endDate" class="col-md-2" style="margin-left: 80px">End date</label>
       <div class="col-md-3">
         <input type="date" class="form-control" id="endDate" formControlName="endDate"
                [(ngModel)]="project.endDate"/>
@@ -100,9 +105,17 @@
           Missing end date
         </span>
       </div>
+      <div class="row">
+        <span
+          *ngIf="error"
+          class="help-block">
+        {{error}}
+      </span>
+      </div>
     </div>
     <hr>
-    <button class="btn btn-default btn-create" type="submit">{{!editMode? 'Create Project': 'Update Project'}}</button>
+    <button class="btn btn-default btn-create"
+            type="submit">{{!editMode ? 'Create Project' : 'Update Project'}}</button>
     <button class="btn btn-default btn-cancel" type="button" (click)="onCancel()">Cancel</button>
   </form>
 

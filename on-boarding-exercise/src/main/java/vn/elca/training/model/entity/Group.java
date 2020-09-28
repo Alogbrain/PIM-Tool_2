@@ -22,7 +22,7 @@ public class Group implements Serializable {
     @ManyToOne
     @JoinColumn(name = "group_leader_id")
     private Employee groupLeader;
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group")
     private Set<Project> projects = new HashSet<>();
 
     public Group(Long id, Employee groupLeader, Set<Project> projects) {
@@ -75,13 +75,4 @@ public class Group implements Serializable {
         this.projects = projects;
     }
 
-    @Override
-    public String toString() {
-        return "Group{" +
-                "id=" + id +
-                ", version=" + version +
-                ", groupLeader=" + groupLeader +
-                ", projects=" + projects +
-                '}';
-    }
 }
