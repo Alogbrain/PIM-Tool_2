@@ -10,11 +10,14 @@ import vn.elca.training.model.dto.GroupDto;
 import vn.elca.training.model.dto.ProjectDto;
 import vn.elca.training.model.entity.Project;
 import vn.elca.training.model.entity.StatusProject;
+import vn.elca.training.model.exception.VisaNotFoundException;
 import vn.elca.training.service.EmployeeService;
 import vn.elca.training.service.GroupService;
 import vn.elca.training.service.ProjectService;
 import vn.elca.training.util.Mapper;
 
+import javax.websocket.server.PathParam;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -113,6 +116,22 @@ public class ProjectController {
             throw new NumberExistException();
         }
     }
+    @PostMapping("/members")
+    @ResponseBody
+    public void checkMembers(@PathParam(value = "members" ) String members) {
+        List<String> allVisa = employeeService.getAllVisa();
+        String[] memberArr = members.split(",");
+        List<String> memberVisaNotFound = new ArrayList<>();
+        for(String member: memberArr) {
+            if (member.trim().length() != 3 || !allVisa.contains(member.trim())) {
+                memberVisaNotFound.add(member);
+            }
+        }
+        if(!memberVisaNotFound.isEmpty()){
+            throw new VisaNotFoundException(memberVisaNotFound);
+        }
+    }
+
     @PostMapping("/update-project/{id}")
     @ResponseBody
     public void update(@PathVariable Integer id, @RequestBody ProjectDto projectDto) {

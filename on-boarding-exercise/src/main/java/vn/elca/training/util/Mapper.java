@@ -54,8 +54,6 @@ public class Mapper {
             employeeArr[i++] = em.getVisa();
         }
         String employee = String.join(",", employeeArr);
-        System.out.println("BBB" + entity.getEmployees());
-        ;
         dto.setMembers(employee);
         return dto;
     }

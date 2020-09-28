@@ -11,6 +11,7 @@ import { NewProjectComponent } from './projects-list/new-project/new-project.com
 import {ProjectService} from './projects-list/project.service';
 import { ProjectItemComponent } from './projects-list/list-projects/project-item/project-item.component';
 import { HttpClientModule} from '@angular/common/http';
+import { ErrorPageComponent } from './error-page/error-page.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { HttpClientModule} from '@angular/common/http';
     ProjectsListComponent,
     ListProjectComponent,
     NewProjectComponent,
-    ProjectItemComponent
+    ProjectItemComponent,
+    ErrorPageComponent
   ],
   imports: [
     BrowserModule,

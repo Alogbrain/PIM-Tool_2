@@ -8,143 +8,155 @@ import {formatDate} from '@angular/common';
 import {Project} from '../project.model';
 import {Group} from '../group.model';
 import {ProjectNumberValidator} from '../../shared/validator/ProjectNumber.validator';
+import {MembersValidator} from '../../shared/validator/Members.validator';
 
 @Component({
-  selector: 'app-new-project',
-  templateUrl: './new-project.component.html',
-  styleUrls: ['./new-project.component.css'],
-  providers: [ProjectNumberValidator]
+    selector: 'app-new-project',
+    templateUrl: './new-project.component.html',
+    styleUrls: ['./new-project.component.css'],
+    providers: [ProjectNumberValidator, MembersValidator]
 })
 export class NewProjectComponent implements OnInit, OnDestroy {
 
-  editMode = false;
-  projectForm: FormGroup;
-  isAlert = false;
-  paramsSubscription: Subscription;
-  queryParamsSubscription: Subscription;
-  id: number;
-  project: Project = {
-    projectNumber: null, endDate: '', startDate: '', status: 'New', members: '', group: {id: null},
-    customer: '', name: ''
-  };
-  error: string;
-  groups: Group[];
+    editMode = false;
+    projectForm: FormGroup;
+    isAlert = false;
+    paramsSubscription: Subscription;
+    queryParamsSubscription: Subscription;
+    id: number;
+    project: Project = {
+        projectNumber: null, endDate: '', startDate: '', status: 'New', members: null, group: {id: null},
+        customer: '', name: ''
+    };
+    error: string;
+    groups: Group[];
 
-  statuses = ['New', 'Inprogress', 'Finished', 'Planned'];
+    statuses = ['New', 'Inprogress', 'Finished', 'Planned'];
 
-  constructor(private route: ActivatedRoute,
-              private projectService: ProjectService,
-              private router: Router,
-              private http: HttpClient,
-              private  checkProjectNumber: ProjectNumberValidator
-  ) {
-  }
-
-  ngOnInit(): void {
-    this.initGroups();
-    this.paramsSubscription = this.route.params
-      .subscribe(
-        (params: Params) => {
-          this.id = params['id'];
-
-        }
-      );
-    this.queryParamsSubscription = this.route.queryParams
-      .subscribe(
-        (queryParams: Params) => {
-          this.editMode = queryParams['allowEdit'] === '1' ? true : false;
-        }
-      );
-
-    this.initForm();
-  }
-
-  onCancel(): void {
-    if (this.editMode) {
-      this.router.navigate(['projects/projects-list']);
-    } else {
-      this.router.navigate(['projects/projects-list']);
+    constructor(private route: ActivatedRoute,
+                private projectService: ProjectService,
+                private router: Router,
+                private http: HttpClient,
+                private checkProjectNumber: ProjectNumberValidator,
+                private checkMembers: MembersValidator
+    ) {
     }
-    // console.log(this.projectService.getProjects());
-  }
 
-  onSubmit(): void {
-    if (this.editMode) {
-      // console.log(this.projectForm);
-      console.log(this.project);
-      this.projectForm.markAllAsTouched();
-      this.updateProject();
-    } else {
-      if (!this.projectForm.valid) {
-        this.isAlert = true;
-      } else {
-        this.isAlert = false;
-        // console.log(this.project);
-        this.projectForm.markAllAsTouched();
-        this.addNewProject();
-      }
+    ngOnInit(): void {
+        this.initGroups();
+        this.paramsSubscription = this.route.params
+            .subscribe(
+                (params: Params) => {
+                    this.id = params['id'];
+                    this.initForm();
+                }
+            );
+        this.queryParamsSubscription = this.route.queryParams
+            .subscribe(
+                (queryParams: Params) => {
+                    this.editMode = queryParams['allowEdit'] === '1' ? true : false;
+                }
+            );
     }
-  }
 
-  addNewProject(): void {
-    console.log(this.project);
-    this.projectService.addProject(this.project)
-      .subscribe(
-        res => {
-          this.projectForm.reset();
-          this.router.navigate(['projects/projects-list']);
-        }, rej => {
-          this.error = rej;
+    onCancel(): void {
+        if (this.editMode) {
+            this.router.navigate(['projects/projects-list']);
+        } else {
+            this.router.navigate(['projects/projects-list']);
         }
-      );
-  }
+        // console.log(this.projectService.getProjects());
+    }
 
-  updateProject(): void {
-    this.projectService.updateProject(this.id, this.project)
-      .subscribe(
-        res => {
-          this.projectForm.reset();
-          this.router.navigate(['projects/projects-list']);
-        }, rej => {
-          this.error = rej;
+    onSubmit(): void {
+        if (this.editMode) {
+            // console.log(this.projectForm);
+            console.log(this.project);
+            this.projectForm.markAllAsTouched();
+            this.updateProject();
+        } else {
+            if (!this.projectForm.valid) {
+                this.isAlert = true;
+            } else {
+                this.isAlert = false;
+                // console.log(this.project);
+                this.projectForm.markAllAsTouched();
+                this.addNewProject();
+            }
         }
-      );
-  }
+    }
 
-  onCancelAlert(): void {
-    this.isAlert = !this.isAlert;
-  }
+    addNewProject(): void {
+        console.log(this.project);
+        this.projectService.addProject(this.project)
+            .subscribe(
+                res => {
+                    this.projectForm.reset();
+                    this.router.navigate(['projects/projects-list']);
+                }, rej => {
+                    if (rej.status === 500) {
+                        this.router.navigate(['/error-page']);
+                    }
+                    this.error = rej;
+                }
+            );
+    }
 
-  private initGroups(): void {
-    this.projectService.getGroups()
-      .subscribe(resGroups => {
-        this.groups = resGroups;
-      });
-  }
+    updateProject(): void {
+        this.projectService.updateProject(this.id, this.project)
+            .subscribe(
+                res => {
+                    this.projectForm.reset();
+                    this.router.navigate(['projects/projects-list']);
+                }, rej => {
+                    if (rej.status === 500) {
+                        this.router.navigate(['/error-page']);
+                    }
+                    this.error = rej;
+                }
+            );
+    }
 
-  private initForm(): void {
-    if (this.editMode) {
-      this.projectService.getProject(this.id).subscribe(
-        res => {
-          this.project = res;
-          console.log(res);
+    onCancelAlert(): void {
+        this.isAlert = !this.isAlert;
+    }
+
+    private initGroups(): void {
+        this.projectService.getGroups()
+            .subscribe(resGroups => {
+                this.groups = resGroups;
+            });
+    }
+
+    private initForm(): void {
+        if (this.editMode) {
+            this.projectService.getProject(this.id).subscribe(
+                res => {
+                    this.project = res;
+                    console.log(res);
+                });
+        }
+        this.projectForm = new FormGroup({
+            number: new FormControl(null, {
+                validators: [Validators.required],
+                asyncValidators: [this.checkProjectNumber.projectNumberValidator(this.editMode)], updateOn: 'submit'
+            }),
+            name: new FormControl(null, Validators.required),
+            customer: new FormControl(null, Validators.required),
+            group: new FormControl(null, Validators.required),
+            members: new FormControl(null,
+                {
+                    asyncValidators: [this.checkMembers.membersValidator()],
+                    updateOn: 'submit'
+                }),
+            status: new FormControl(null, Validators.required),
+            startDate: new FormControl(null, Validators.required),
+            endDate: new FormControl(null)
         });
     }
-    this.projectForm = new FormGroup({
-      number: new FormControl(null, {validators: [Validators.required],
-       asyncValidators: [this.checkProjectNumber.projectNumberValidator(this.editMode)], updateOn: 'blur'}),
-      name: new FormControl(null, Validators.required),
-      customer: new FormControl(null, Validators.required),
-      group: new FormControl(null, Validators.required),
-      members: new FormControl(null),
-      status: new FormControl(null, Validators.required),
-      startDate: new FormControl(null, Validators.required),
-      endDate: new FormControl(null)
-    });
-  }
 
-  ngOnDestroy(): void {
-    this.paramsSubscription.unsubscribe();
-    this.queryParamsSubscription.unsubscribe();
-  }
+    ngOnDestroy(): void {
+        this.paramsSubscription.unsubscribe();
+        this.queryParamsSubscription.unsubscribe();
+    }
 }
