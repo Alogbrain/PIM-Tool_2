@@ -3,9 +3,8 @@ package vn.elca.training.service.impl;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import vn.elca.training.model.entity.Project;
+import vn.elca.training.model.entity.Employee;
 import vn.elca.training.model.entity.QEmployee;
-import vn.elca.training.model.entity.QProject;
 import vn.elca.training.repository.EmployeeRepository;
 import vn.elca.training.service.EmployeeService;
 
@@ -25,6 +24,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         return new JPAQuery<String>(em).distinct()
                 .from(QEmployee.employee)
                 .select(QEmployee.employee.visa)
+                .fetch();
+    }
+
+    @Override
+    public List<Employee> getEmployeeByVisa(String[] visa) {
+        return new JPAQuery<Employee>(em)
+                .from(QEmployee.employee)
+                .where(QEmployee.employee.visa.in(visa))
                 .fetch();
     }
 }

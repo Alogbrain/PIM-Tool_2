@@ -7,11 +7,13 @@ import {HttpClient} from '@angular/common/http';
 import {formatDate} from '@angular/common';
 import {Project} from '../project.model';
 import {Group} from '../group.model';
+import {ProjectNumberValidator} from '../../shared/validator/ProjectNumber.validator';
 
 @Component({
   selector: 'app-new-project',
   templateUrl: './new-project.component.html',
-  styleUrls: ['./new-project.component.css']
+  styleUrls: ['./new-project.component.css'],
+  providers: [ProjectNumberValidator]
 })
 export class NewProjectComponent implements OnInit, OnDestroy {
 
@@ -33,7 +35,8 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute,
               private projectService: ProjectService,
               private router: Router,
-              private http: HttpClient
+              private http: HttpClient,
+              private  checkProjectNumber: ProjectNumberValidator
   ) {
   }
 
@@ -43,6 +46,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
       .subscribe(
         (params: Params) => {
           this.id = params['id'];
+
         }
       );
     this.queryParamsSubscription = this.route.queryParams
@@ -53,11 +57,11 @@ export class NewProjectComponent implements OnInit, OnDestroy {
       );
 
     this.initForm();
-
   }
 
   onCancel(): void {
     if (this.editMode) {
+      this.router.navigate(['projects/projects-list']);
     } else {
       this.router.navigate(['projects/projects-list']);
     }
@@ -68,6 +72,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
     if (this.editMode) {
       // console.log(this.projectForm);
       console.log(this.project);
+      this.projectForm.markAllAsTouched();
       this.updateProject();
     } else {
       if (!this.projectForm.valid) {
@@ -75,20 +80,21 @@ export class NewProjectComponent implements OnInit, OnDestroy {
       } else {
         this.isAlert = false;
         // console.log(this.project);
+        this.projectForm.markAllAsTouched();
         this.addNewProject();
       }
     }
   }
 
   addNewProject(): void {
+    console.log(this.project);
     this.projectService.addProject(this.project)
       .subscribe(
         res => {
           this.projectForm.reset();
           this.router.navigate(['projects/projects-list']);
         }, rej => {
-          this.error = rej.message;
-          console.log('FAIL');
+          this.error = rej;
         }
       );
   }
@@ -100,7 +106,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
           this.projectForm.reset();
           this.router.navigate(['projects/projects-list']);
         }, rej => {
-          console.log('FAIL');
+          this.error = rej;
         }
       );
   }
@@ -124,16 +130,16 @@ export class NewProjectComponent implements OnInit, OnDestroy {
           console.log(res);
         });
     }
-
     this.projectForm = new FormGroup({
-      number: new FormControl(null, Validators.required),
+      number: new FormControl(null, {validators: [Validators.required],
+       asyncValidators: [this.checkProjectNumber.projectNumberValidator(this.editMode)], updateOn: 'blur'}),
       name: new FormControl(null, Validators.required),
       customer: new FormControl(null, Validators.required),
       group: new FormControl(null, Validators.required),
       members: new FormControl(null),
       status: new FormControl(null, Validators.required),
       startDate: new FormControl(null, Validators.required),
-      endDate: new FormControl(null, Validators.required)
+      endDate: new FormControl(null)
     });
   }
 

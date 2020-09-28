@@ -15,11 +15,11 @@ public class ProjectRepositoryImpl implements ProjectRespositoryCustom {
     private EntityManager em;
 
     @Override
-    public List<Project> findProjectById(Integer id) {
+    public Project findProjectById(Integer id) {
         return new JPAQuery<Project>(em)
                 .from(QProject.project)
                 .innerJoin(QProject.project.group, QGroup.group).fetchJoin()
                 .where(QProject.project.projectNumber.eq(id))
-                .fetch();
+                .fetchOne();
     }
 }

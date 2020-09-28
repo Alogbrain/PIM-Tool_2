@@ -20,6 +20,7 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   criteria = '';
   status = '';
   statuses = ['', 'New', 'Inprogress', 'Finished', 'Planned'];
+  deleteList = [];
 
   constructor(private projectService: ProjectService,
               private http: HttpClient) {
@@ -45,6 +46,7 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   onReset(): void {
     this.criteria = '';
     this.status = '';
+    this.fetchData();
   }
 
   initForm(): void {
@@ -53,17 +55,33 @@ export class ListProjectComponent implements OnInit, OnDestroy {
       status: new FormControl(null)
     });
   }
-
+  onChangeItemDelete(e, project): void{
+    if (e.target.checked){
+      this.deleteList.push({projectNumber: project.projectNumber, status: project.status});
+    }else{
+      let index = this.deleteList.findIndex(i => i.projectNumber === project.projectNumber);
+      this.deleteList.splice(index, 1);
+    }
+  }
   deleteProject(id: number): void {
     this.projectService.deleteProject(id).subscribe(
       res => {
-        console.log('SUCCESS');
+        this.fetchData();
       }, rej => {
         console.log('FAIL');
       }
     );
   }
-
+  deleteListProjects(): void {
+    this.projectService.deleteProjectList(this.deleteList).subscribe(
+      res => {
+        this.fetchData();
+      }, rej => {
+        console.log('FAIL');
+      }
+    );
+    this.deleteList = [];
+  }
   onSubmit(): void {
     if (this.status == null) {
       this.status = '';

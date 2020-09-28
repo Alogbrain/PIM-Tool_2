@@ -12,7 +12,7 @@ import vn.elca.training.model.entity.StatusProject;
 public interface ProjectService {
     List<Project> findAll();
     List<Project> findByCriteria(String name, StatusProject status);
-    List<Project> findById(Integer id);
+    Project findById(Integer id);
     void createNewProject(Project project);
     void deleteProject(Integer id);
     void updateProject(Integer id, Project project);

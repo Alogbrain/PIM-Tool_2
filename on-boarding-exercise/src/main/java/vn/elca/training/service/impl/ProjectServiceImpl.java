@@ -1,16 +1,15 @@
 package vn.elca.training.service.impl;
 
-import java.util.ArrayList;
+import java.beans.Expression;
 import java.util.List;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.InternalParseException;
 import org.springframework.stereotype.Service;
 
-import org.springframework.transaction.annotation.Transactional;
-import vn.elca.training.exception.NumberExistException;
-import vn.elca.training.model.entity.QGroup;
+import vn.elca.training.model.exception.NumberExistException;
 import vn.elca.training.model.entity.QProject;
 import vn.elca.training.model.entity.StatusProject;
 import vn.elca.training.repository.ProjectRepository;
@@ -40,6 +39,17 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<Project> findByCriteria(String criteria, StatusProject status) {
 
+//        BooleanExpression expr = QProject.project.id.isNotNull();
+//
+//        if (StringUtils.isNotBlank(criteria)) {
+//            expr = expr.and(QProject.project.name.equalsIgnoreCase(criteria).or(QProject.project.customer.equalsIgnoreCase(criteria))
+//                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase()));
+//        }
+
+
+
+
+
         if (status == null && !criteria.equals("")) {
             try {
                 Integer id = Integer.parseInt(criteria);
@@ -53,6 +63,7 @@ public class ProjectServiceImpl implements ProjectService {
             return new JPAQuery<Project>(em)
                     .from(QProject.project)
                     .where(QProject.project.name.equalsIgnoreCase(criteria).or(QProject.project.customer.equalsIgnoreCase(criteria)))
+//                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase()))
                     .fetch();
         } else if (status != null && criteria.equals("")) {
             return new JPAQuery<Project>(em)
@@ -74,12 +85,14 @@ public class ProjectServiceImpl implements ProjectService {
                     .where((QProject.project.name.equalsIgnoreCase(criteria)
                             .or(QProject.project.customer.equalsIgnoreCase(criteria)))
                             .and(QProject.project.status.eq(status)))
+                    .orderBy(QProject.project.projectNumber.asc())
+
                     .fetch();
         }
     }
 
     @Override
-    public List<Project> findById(Integer id) {
+    public Project findById(Integer id) {
         return projectRepository.findProjectById(id);
     }
 
@@ -92,7 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
         if (currProject == null) {
             this.projectRepository.save(project);
         } else {
-            throw new NumberExistException(project.getProjectNumber());
+            throw new NumberExistException();
         }
     }
 
@@ -101,7 +114,7 @@ public class ProjectServiceImpl implements ProjectService {
         Project project = new JPAQuery<Project>(em)
                 .from(QProject.project)
                 .where(QProject.project.projectNumber.eq(id))
-                .fetch().get(0);
+                .fetchFirst();
         projectRepository.delete(project);
     }
 
@@ -112,7 +125,6 @@ public class ProjectServiceImpl implements ProjectService {
                 .where(QProject.project.projectNumber.eq(id))
                 .fetchFirst();
         crrProject.setId(newProject.getId());
-        newProject = crrProject;
-        projectRepository.save(newProject);
+        projectRepository.save(crrProject);
     }
 }

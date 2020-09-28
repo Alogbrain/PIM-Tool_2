@@ -1,10 +1,10 @@
 <div class="col-md-2">
-  <div class="title" id="title-project-list">Projects list</div>
-  <div class="title">New</div>
+  <div class="title" id="title-project-list" routerLinkActive="active"><a routerLink="/projects/projects-list">Projects list</a></div>
+  <div  class="title" routerLinkActive="active"><a routerLink="/projects/new-project">New</a></div>
   <div class="sidebar-item" style="margin-top: 10px">
     <div class="input-group" routerLinkActive="active"><a routerLink="/projects/new-project">Project</a></div>
-    <div class="input-group" routerLinkActive="active" ><a routerLink="/projects/projects-list">Customer</a></div>
-    <div class="input-group" routerLinkActive="active" ><a >Supplier</a></div>
+    <div class="input-group" ><a >Customer</a></div>
+    <div class="input-group" ><a >Supplier</a></div>
   </div>
 </div>
 <router-outlet></router-outlet>

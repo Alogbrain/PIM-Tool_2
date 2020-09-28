@@ -1,7 +1,8 @@
 package vn.elca.training.model.dto;
 
 public class EmployeeDto {
-    String Visa;
+    private Long id;
+    private String Visa;
 
     public String getVisa() {
         return Visa;
@@ -9,5 +10,13 @@ public class EmployeeDto {
 
     public void setVisa(String visa) {
         Visa = visa;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
