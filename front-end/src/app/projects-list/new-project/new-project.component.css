@@ -1,9 +1,10 @@
 form label {
   display: flex;
-  margin-left: 40px;
+  margin-left: 30px;
   font-family: "Segoe UI Semibold";
   font-size: 14pt;
   color: #666666;
+  padding-left: 0px;
 }
 
 .required .control-label::after {
@@ -26,20 +27,19 @@ select {
 .btn {
   border-radius: 7px;
   height: 35px;
-  width: 200px;
-  float: right;
-  margin-right: 100px;
+  /*width: 190px;*/
+  width: 100%;
 }
 
 .btn-cancel {
-  margin-right: 50px;
   background-color: #B9B9B9;
   color: black;
+
 }
 
 .btn-create {
   color: white;
-  background-color: #2F85FA
+  background-color: #2F85FA;
 }
 
 /*.btn:hover {*/

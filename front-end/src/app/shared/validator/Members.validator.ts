@@ -13,12 +13,8 @@ export class MembersValidator {
 
   membersValidator(): AsyncValidatorFn {
     return (control: AbstractControl): Promise<any> | Observable<any> => {
-      let name = [];
-      if (control.value) {
-        name = control.value.split(',');
-      }
       const params = new HttpParams().append('members', control.value);
-      if (name.length > 0){
+      if (control.value){
         return this.http.post('/api/projects/members', params).pipe(
           catchError(
             (res: HttpErrorResponse) => {
@@ -27,7 +23,7 @@ export class MembersValidator {
           )
         );
       }
-      return Promise.resolve({'membersError': ''});
+      return Promise.resolve(null);
     };
   }
 }

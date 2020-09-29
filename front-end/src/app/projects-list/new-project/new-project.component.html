@@ -99,16 +99,25 @@
         errorDate
       </span>
       </div>
-      <label for="endDate" class="col-md-2" style="margin-left: 130px" translate>end-date</label>
+      <div class="col-md-1"></div>
+      <label for="endDate" class="col-md-2" style="margin-left: 0px" translate>end-date</label>
       <div class="col-md-3">
         <input type="date" class="form-control" id="endDate" formControlName="endDate"/>
       </div>
 
     </div>
     <hr>
-    <button class="btn btn-default btn-create"
-            type="submit" translate>{{!editMode ? 'create-btn' : 'update-btn'}}</button>
-    <button class="btn btn-default btn-cancel" type="button" (click)="onCancel()" translate>cancel</button>
+    <div class="form-group">
+      <div class="col-md-6"></div>
+      <div class="col-md-2" style=" padding: 0px; margin-left: 10px">
+        <button class="btn btn-default btn-cancel" type="button" (click)="onCancel()" translate>cancel</button>
+      </div>
+      <div class="col-md-1"></div>
+      <div class="col-md-2" style="padding: 0px">
+        <button class="btn btn-primary btn-create"
+                type="submit" translate>{{!editMode ? 'create-btn' : 'update-btn'}}</button>
+      </div>
+    </div>
   </form>
 
 </div>

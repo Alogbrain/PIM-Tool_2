@@ -74,21 +74,29 @@ public class Mapper {
         }
         project.setGroup(new Group(entity.getGroup().getId()));
         project.setVersion(entity.getVersion());
-        List<String> allVisa = employeeService.getAllVisa();
-        String[] members = entity.getMembers().split(",");
-        List<String> memberVisaNotFound = new ArrayList<>();
-        for (String member : members) {
-            if (member.trim().length() != 3 || !allVisa.contains(member.trim())) {
-                memberVisaNotFound.add(member);
+        if(!StringUtils.isBlank(entity.getMembers())){
+            List<String> allVisa = employeeService.getAllVisa();
+            String[] members = entity.getMembers().split(",");
+            List<String> memberVisaNotFound = new ArrayList<>();
+            for (String member : members) {
+                if (member.trim().length() != 3 || !allVisa.contains(member.trim())) {
+                    memberVisaNotFound.add(member);
+                }
             }
+            if (!memberVisaNotFound.isEmpty()) {
+                throw new VisaNotFoundException(memberVisaNotFound);
+            }
+            List<Employee> employeeList = employeeService.getEmployeeByVisa(members);
+            project.setEmployees(employeeList);
+        }else{
+            List<Employee> employeeList = new ArrayList<>();
+            project.setEmployees(employeeList);
         }
-        if (!memberVisaNotFound.isEmpty()) {
-            throw new VisaNotFoundException(memberVisaNotFound);
-        }
-        List<Employee> employeeList = employeeService.getEmployeeByVisa(members);
-        project.setEmployees(employeeList);
 
-        System.out.println(project);
+
+
+
+//        System.out.println(project);
         return project;
     }
 

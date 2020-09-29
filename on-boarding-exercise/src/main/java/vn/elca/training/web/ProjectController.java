@@ -140,6 +140,7 @@ public class ProjectController {
         if (project.getEndDate() != null && project.getStartDate().isAfter(project.getEndDate())) {
             throw new StartDateGreaterThanEndDateException();
         }
+        System.out.println("NNN"+ project);
         this.projectService.updateProject(id, project);
     }
 }
