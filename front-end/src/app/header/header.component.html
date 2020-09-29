@@ -1,31 +1,31 @@
 <nav class="navbar navbar-default">
-  <div class="container">
-    <div class="navbar-header">
+  <div class="container-fluid">
+    <div class="navbar-header" style="margin-left: 50px">
       <a routerLink="/">
         <img src="../../assets/img/logo_elca.png"
              class="navbar-brand"
              alt="Brand">
       </a>
-      <p class="navbar-text">
-        Project Information Management
+      <p class="navbar-text" translate>
+        title
       </p>
     </div>
 
     <!--    <div class="collapse navbar-collapse">-->
     <div class="navbar-right-custom">
       <div class="navbar-right" id="language-local">
-        <a>EN</a>|<a>FR</a>
+        <a (click)="useLanguage('en')">EN</a>|<a (click)="useLanguage('fr')">FR</a>
       </div>
       <div id="action-bar">
         <ul class="nav navbar-nav navbar-right">
           <li routerLinkActive="active">
-            <a routerLink="/help"
-            >Help
+            <a routerLink="/help" translate>
+              help
             </a>
           </li>
           <li routerLinkActive="active">
-            <a routerLink="/logout">
-              Log out
+            <a routerLink="/logout" translate>
+              log-out
             </a>
           </li>
         </ul>

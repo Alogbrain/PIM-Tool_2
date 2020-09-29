@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 /**
  * @author gtn
- *
  */
 public class ProjectDto {
     private Long id;
@@ -19,6 +18,7 @@ public class ProjectDto {
     private String startDate;
     private GroupDto group;
     private String endDate;
+    private Integer version;
 
     public Long getId() {
         return id;
@@ -56,6 +56,14 @@ public class ProjectDto {
         this.members = members;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @Override
     public String toString() {
         return "ProjectDto{" +
@@ -68,6 +76,7 @@ public class ProjectDto {
                 ", startDate='" + startDate + '\'' +
                 ", group=" + group +
                 ", endDate='" + endDate + '\'' +
+                ", version=" + version +
                 '}';
     }
 

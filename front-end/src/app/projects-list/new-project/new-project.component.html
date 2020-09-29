@@ -1,122 +1,114 @@
 <div class="col-md-10" style="border-left: 1px solid gray;">
-  <div style="font-weight: bold; color: #666666">{{!editMode ? 'New Project' : 'Edit Project Information'}}</div>
+  <div style="font-weight: bold; color: #666666" translate>{{!editMode ? 'title-new-project' : 'title-edit-project'}}</div>
   <hr>
   <form [formGroup]="projectForm" (ngSubmit)="onSubmit()" class="form-horizontal">
     <div *ngIf="!projectForm.valid && isAlert" class="alert alert-danger alert-dismissible show ">
-      <strong>Please enter all the mandatory fields(*)</strong>
+      <strong translate>miss-form-error</strong>
       <button type="button" class="close" (click)="onCancelAlert()">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     <div class="form-group required">
-      <label for="projectNumber" class="col-md-2 control-label" style="padding-right: 0px">Project Number</label>
+      <label for="projectNumber" class="col-md-2 control-label" style="padding-right: 0px" translate >project-number</label>
       <div class="col-md-3">
         <input type="number" [attr.disabled]="editMode ? 'disabled' : null" id="projectNumber" class="form-control"
-               formControlName="number" pattern="^[1-9]+[0-9]*$" [(ngModel)]="project.projectNumber">
+               formControlName="number" pattern="^[1-9]+[0-9]*$" >
+        <!--      *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched"-->
       </div>
-      <!--      *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched"-->
-      <span class="help-block" *ngIf="projectForm.get('number').errors['numberProjectError']">
-        {{projectForm.get('number').errors['numberProjectError']}}</span>
-    </div>
-    <div class="form-group required">
-      <label for="projectName" class="col-md-2 control-label">Project name</label>
-      <div class="col-md-9">
-        <input type="text" id="projectName" class="form-control" formControlName="name"
-               [(ngModel)]="project.name">
-        <span
-          *ngIf="!projectForm.get('name').valid && projectForm.get('name').touched"
-          class="help-block">
-        The project name is invalid . Please select a different project name
+      <span class="help-block" *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched">
+        <span *ngIf="projectForm.get('number').errors?.numberProjectError" translate>
+          number-project-already-exit
         </span>
-      </div>
-    </div>
-    <div class="form-group required">
-      <label for="customer" class="col-md-2 control-label ">Customer</label>
-      <div class="col-md-9">
-        <input type="text" id="customer" class="form-control" formControlName="customer"
-               [(ngModel)]="project.customer">
-        <span
-          *ngIf="!projectForm.get('customer').valid && projectForm.get('customer').touched"
-          class="help-block">
-        Missing customer name
       </span>
+    </div>
+    <div class="form-group required">
+      <label for="projectName" class="col-md-2 control-label" translate>project-name</label>
+      <div class="col-md-9">
+        <input type="text" id="projectName" class="form-control" formControlName="name">
+<!--        <span-->
+<!--          *ngIf="!projectForm.get('name').valid && projectForm.get('name').touched"-->
+<!--          class="help-block">-->
+<!--        The project name is invalid . Please select a different project name-->
+<!--        </span>-->
       </div>
     </div>
     <div class="form-group required">
-      <label for="group" class="col-md-2 control-label">Group</label>
+      <label for="customer" class="col-md-2 control-label" translate>customer</label>
+      <div class="col-md-9">
+        <input type="text" id="customer" class="form-control" formControlName="customer">
+<!--        <span-->
+<!--          *ngIf="!projectForm.get('customer').valid && projectForm.get('customer').touched"-->
+<!--          class="help-block">-->
+<!--        Missing customer name-->
+<!--      </span>-->
+      </div>
+    </div>
+    <div class="form-group required">
+      <label for="group" class="col-md-2 control-label" translate>group</label>
       <div class="col-md-3">
         <select class="form-control" id="group" formControlName="group"
-                [(ngModel)]="project.group.id">
+                >
           <option *ngFor="let group of groups" [ngValue]="group.id">{{group.id}}</option>
         </select>
       </div>
-      <span
-        *ngIf="!projectForm.get('group').valid && projectForm.get('group').touched"
-        class="help-block">
-        Missing group
-        </span>
+<!--      <span-->
+<!--        *ngIf="!projectForm.get('group').valid && projectForm.get('group').touched"-->
+<!--        class="help-block">-->
+<!--        Missing group-->
+<!--        </span>-->
     </div>
     <div class="form-group">
-      <label for="member" class="col-md-2 control-label">Members</label>
+      <label for="member" class="col-md-2 control-label" translate>members</label>
       <div class="col-md-9">
-        <input type="text" id="member" class="form-control" formControlName="members"
-               [(ngModel)]="project.members">
-      </div>
-      <div class="row">
-      <span
-        *ngIf="error"
-        class="help-block">
-        {{error}}
-      </span>
+        <input type="text" id="member" class="form-control" formControlName="members">
+
+        <span *ngIf="projectForm.get('members').touched
+         && projectForm.get('members').invalid">
+          <span  class="help-block"  *ngIf="projectForm.get('members').errors['membersError']" translate>
+            visa-not-exist <span>{{projectForm.get('members').errors['membersError']}}</span>
+          </span>
+        </span>
       </div>
     </div>
     <div class="form-group required">
-      <label for="status" class="col-md-2 control-label">Status</label>
+      <label for="status" class="col-md-2 control-label" translate>status</label>
       <div class="col-md-3">
-        <select class="form-control" id="status" formControlName="status" [(ngModel)]="project.status">
+        <select class="form-control" id="status" formControlName="status">
           <option *ngFor="let status of statuses" [ngValue]="status">{{status}}</option>
         </select>
       </div>
-      <span
-        *ngIf="!projectForm.get('status').valid && projectForm.get('status').touched"
-        class="help-block">
-          Missing status
-        </span>
+<!--      <span-->
+<!--        *ngIf="!projectForm.get('status').valid && projectForm.get('status').touched"-->
+<!--        class="help-block">-->
+<!--          Missing status-->
+<!--        </span>-->
     </div>
 
     <div class="form-group required">
-      <label for="startDate" class="col-md-2 control-label">Start date</label>
+      <label for="startDate" class="col-md-2 control-label" translate>start-date</label>
       <div class="col-md-3">
-        <input type="date" class="form-control" id="startDate" formControlName="startDate"
-               [(ngModel)]="project.startDate"/>
-        <span
-          *ngIf="!projectForm.get('startDate').valid && projectForm.get('startDate').touched"
-          class="help-block">
-          Missing start date
-        </span>
-      </div>
-      <label for="endDate" class="col-md-2" style="margin-left: 80px">End date</label>
-      <div class="col-md-3">
-        <input type="date" class="form-control" id="endDate" formControlName="endDate"
-               [(ngModel)]="project.endDate"/>
-        <span
-          *ngIf="!projectForm.get('endDate').valid && projectForm.get('endDate').touched"
-          class="help-block">
-          Missing end date
-        </span>
-      </div>
-      <div class="row">
+        <input type="date" class="form-control" id="startDate" formControlName="startDate"/>
+<!--        <span-->
+<!--          *ngIf="!projectForm.get('startDate').valid && projectForm.get('startDate').touched"-->
+<!--          class="help-block">-->
+<!--          Missing start date-->
+<!--        </span>-->
         <span
           *ngIf="error"
-          class="help-block">
-        {{error}}
+          class="help-block" translate>
+        errorDate
       </span>
       </div>
+      <label for="endDate" class="col-md-2" style="margin-left: 130px" translate>end-date</label>
+      <div class="col-md-3">
+        <input type="date" class="form-control" id="endDate" formControlName="endDate"/>
+      </div>
+
     </div>
     <hr>
     <button class="btn btn-default btn-create"
-            type="submit">{{!editMode ? 'Create Project' : 'Update Project'}}</button>
-    <button class="btn btn-default btn-cancel" type="button" (click)="onCancel()">Cancel</button>
+            type="submit" translate>{{!editMode ? 'create-btn' : 'update-btn'}}</button>
+    <button class="btn btn-default btn-cancel" type="button" (click)="onCancel()" translate>cancel</button>
   </form>
 
 </div>

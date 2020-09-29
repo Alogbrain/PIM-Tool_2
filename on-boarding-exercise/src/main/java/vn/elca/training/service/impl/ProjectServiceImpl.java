@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import vn.elca.training.model.exception.ConcurrentUpdateException;
 import vn.elca.training.model.exception.NumberExistException;
 import vn.elca.training.model.entity.QProject;
 import vn.elca.training.model.entity.StatusProject;
@@ -47,9 +48,6 @@ public class ProjectServiceImpl implements ProjectService {
 //        }
 
 
-
-
-
         if (status == null && !criteria.equals("")) {
             try {
                 Integer id = Integer.parseInt(criteria);
@@ -62,7 +60,8 @@ public class ProjectServiceImpl implements ProjectService {
             }
             return new JPAQuery<Project>(em)
                     .from(QProject.project)
-                    .where(QProject.project.name.equalsIgnoreCase(criteria).or(QProject.project.customer.equalsIgnoreCase(criteria)))
+                    .where(QProject.project.name.containsIgnoreCase(criteria).
+                            or(QProject.project.customer.containsIgnoreCase(criteria)))
 //                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase()))
                     .fetch();
         } else if (status != null && criteria.equals("")) {
@@ -82,8 +81,8 @@ public class ProjectServiceImpl implements ProjectService {
             }
             return new JPAQuery<Project>(em)
                     .from(QProject.project)
-                    .where((QProject.project.name.equalsIgnoreCase(criteria)
-                            .or(QProject.project.customer.equalsIgnoreCase(criteria)))
+                    .where((QProject.project.name.containsIgnoreCase(criteria)
+                            .or(QProject.project.customer.containsIgnoreCase(criteria)))
                             .and(QProject.project.status.eq(status)))
                     .orderBy(QProject.project.projectNumber.asc())
 
@@ -120,11 +119,15 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void updateProject(Integer id, Project crrProject) {
-        Project newProject =  new JPAQuery<Project>(em)
+        Project newProject = new JPAQuery<Project>(em)
                 .from(QProject.project)
                 .where(QProject.project.projectNumber.eq(id))
                 .fetchFirst();
         crrProject.setId(newProject.getId());
-        projectRepository.save(crrProject);
+        try {
+            projectRepository.save(crrProject);
+        } catch (RuntimeException e) {
+            throw new ConcurrentUpdateException();
+        }
     }
 }

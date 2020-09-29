@@ -13,15 +13,16 @@ public class Employee implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String visa;
-    @Column
+    @Column(nullable = false)
     private String firstName;
-    @Column
+    @Column(nullable = false)
     private String lastName;
-    @Column
+    @Column(nullable = false)
     private Date birthDate;
-    @Column
+    @Version
+    @Column(nullable = false, columnDefinition ="int DEFAULT 0")
     private Integer version;
 
     //    @ManyToOne

@@ -1,6 +1,7 @@
 package vn.elca.training.util;
 
 import org.apache.commons.lang3.StringUtils;
+import vn.elca.training.model.dto.ProjectDtoForList;
 import vn.elca.training.model.exception.VisaNotFoundException;
 import vn.elca.training.model.dto.EmployeeDto;
 import vn.elca.training.model.dto.GroupDto;
@@ -21,16 +22,14 @@ public class Mapper {
         // Mapper utility class
     }
 
-    public static ProjectDto projectToProjectDtoForAll(Project entity) {
-        ProjectDto dto = new ProjectDto();
+    public static ProjectDtoForList projectToProjectDtoForAll(Project entity) {
+        ProjectDtoForList dto = new ProjectDtoForList();
         dto.setId(entity.getId());
         dto.setProjectNumber(entity.getProjectNumber());
         dto.setName(entity.getName());
         dto.setStatus(entity.getStatus());
         dto.setCustomer(entity.getCustomer());
         dto.setStartDate(entity.getStartDate().toString());
-//        dto.setGroup(entity.getGroup());
-//        dto.setEndDate(entity.getEndDate().toString());
         return dto;
     }
 
@@ -43,6 +42,7 @@ public class Mapper {
         dto.setCustomer(entity.getCustomer());
         dto.setStartDate(entity.getStartDate().toString());
         dto.setGroup(entity.getGroup());
+        dto.setVersion(entity.getVersion());
         if (entity.getEndDate() != null) {
             dto.setEndDate(entity.getEndDate().toString());
         } else {
@@ -54,8 +54,7 @@ public class Mapper {
             employeeArr[i++] = em.getVisa();
         }
         String employee = String.join(",", employeeArr);
-        System.out.println("BBB" + entity.getEmployees());
-        ;
+
         dto.setMembers(employee);
         return dto;
     }
@@ -74,16 +73,16 @@ public class Mapper {
             project.setEndDate(LocalDate.parse(entity.getEndDate()));
         }
         project.setGroup(new Group(entity.getGroup().getId()));
-
+        project.setVersion(entity.getVersion());
         List<String> allVisa = employeeService.getAllVisa();
         String[] members = entity.getMembers().split(",");
         List<String> memberVisaNotFound = new ArrayList<>();
-        for(String member: members) {
+        for (String member : members) {
             if (member.trim().length() != 3 || !allVisa.contains(member.trim())) {
                 memberVisaNotFound.add(member);
             }
         }
-        if(!memberVisaNotFound.isEmpty()){
+        if (!memberVisaNotFound.isEmpty()) {
             throw new VisaNotFoundException(memberVisaNotFound);
         }
         List<Employee> employeeList = employeeService.getEmployeeByVisa(members);

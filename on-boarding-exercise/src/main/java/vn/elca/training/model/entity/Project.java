@@ -1,5 +1,7 @@
 package vn.elca.training.model.entity;
 
+import org.hibernate.validator.constraints.Range;
+
 import java.time.LocalDate;
 import java.util.*;
 
@@ -26,20 +28,22 @@ public class Project {
             joinColumns = @JoinColumn(name = "project_id"),
             inverseJoinColumns = @JoinColumn(name = "employee_id"))
     private List<Employee> employees = new ArrayList<>();
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
+    @Range(max = 9999, min = 0)
     private Integer projectNumber;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String name;
-    @Column
+    @Column(nullable = false, length = 50)
     private String customer;
-    @Column
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusProject status;
-    @Column
+    @Column(nullable = false)
     private LocalDate startDate;
     @Column
     private LocalDate endDate;
-    @Column
+    @Version
+    @Column(nullable = false, columnDefinition ="int DEFAULT 0")
     private Integer version;
 
 

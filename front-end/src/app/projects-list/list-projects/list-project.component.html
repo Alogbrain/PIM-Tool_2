@@ -1,5 +1,5 @@
-<div class="col-md-10" style="border-left: 1px solid gray;">
-  <div style="font-weight: bold; color: #666666"> Projects List</div>
+<div class="col-md-9" style="border-left: 1px solid gray;">
+  <div style="font-weight: bold; color: #666666" translate>projects-list-title</div>
   <hr>
   <form [formGroup]="listProjectsForm" (ngSubmit)="onSubmit()">
     <div class="row">
@@ -16,22 +16,22 @@
         </select>
       </div>
       <div class="form-group col-md-2">
-        <button class="btn btn-primary" style="width: 150px">Search Project</button>
+        <button class="btn btn-primary" style="width: 150px" translate>search-project</button>
       </div>
       <div class="form-group col-md-3" style="padding-left: 70px; font-weight: bold;margin-top: 5px"><a
-        style="cursor: pointer;" (click)="onReset()">Reset Search</a></div>
+        style="cursor: pointer;" (click)="onReset()" translate>reset-search</a></div>
     </div>
   </form>
   <table class="table table-bordered table-striped">
     <thead>
     <tr>
       <th scope="col"></th>
-      <th scope="col">Number</th>
-      <th scope="col">Name</th>
-      <th scope="col">Status</th>
-      <th scope="col">Customer</th>
-      <th scope="col">Start Date</th>
-      <th scope="col">Delete</th>
+      <th scope="col" translate>col-number</th>
+      <th scope="col" translate>col-name</th>
+      <th scope="col" translate>col-status</th>
+      <th scope="col" translate>col-customer</th>
+      <th scope="col" translate>col-start-date</th>
+      <th scope="col" translate>col-delete</th>
     </tr>
     </thead>
     <tbody>

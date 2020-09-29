@@ -10,7 +10,10 @@ import { ListProjectComponent } from './projects-list/list-projects/list-project
 import { NewProjectComponent } from './projects-list/new-project/new-project.component';
 import {ProjectService} from './projects-list/project.service';
 import { ProjectItemComponent } from './projects-list/list-projects/project-item/project-item.component';
-import { HttpClientModule} from '@angular/common/http';
+import {HttpClient, HttpClientModule} from '@angular/common/http';
+import { ErrorPageComponent } from './error-page/error-page.component';
+import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 @NgModule({
   declarations: [
@@ -19,14 +22,22 @@ import { HttpClientModule} from '@angular/common/http';
     ProjectsListComponent,
     ListProjectComponent,
     NewProjectComponent,
-    ProjectItemComponent
+    ProjectItemComponent,
+    ErrorPageComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   exports: [
     HeaderComponent
@@ -35,3 +46,7 @@ import { HttpClientModule} from '@angular/common/http';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}

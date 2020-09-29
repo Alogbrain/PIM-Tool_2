@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import vn.elca.training.model.dto.ProjectDtoForList;
-import vn.elca.training.model.exception.NumberExistException;
-import vn.elca.training.model.exception.StartDateGreaterThanEndDateException;
+import vn.elca.training.model.exception.*;
 import vn.elca.training.model.dto.GroupDto;
 import vn.elca.training.model.dto.ProjectDto;
 import vn.elca.training.model.entity.Project;
@@ -15,6 +14,8 @@ import vn.elca.training.service.GroupService;
 import vn.elca.training.service.ProjectService;
 import vn.elca.training.util.Mapper;
 
+import javax.websocket.server.PathParam;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,28 +37,28 @@ public class ProjectController {
 
     @GetMapping("/query")
     @ResponseBody
-    public List<ProjectDto> query() {
+    public List<ProjectDtoForList> query() {
         return projectService.findAll()
                 .stream()
                 .map(Mapper::projectToProjectDtoForAll)
-                .sorted(Comparator.comparing(ProjectDto::getProjectNumber))
+                .sorted(Comparator.comparing(ProjectDtoForList::getProjectNumber))
                 .collect(Collectors.toList());
     }
 
     @PostMapping("/search")
     @ResponseBody
-    public List<ProjectDto> Search(@RequestParam(value = "status", defaultValue = "", required = false)
-                                           StatusProject status, @RequestParam("criteria") String criteria) {
+    public List<ProjectDtoForList> Search(@RequestParam(value = "status", defaultValue = "", required = false)
+                                                  StatusProject status, @RequestParam("criteria") String criteria) {
         return ("".equals(criteria) && status == null)
                 ? projectService.findAll()
                 .stream()
                 .map(Mapper::projectToProjectDtoForAll)
-                .sorted(Comparator.comparing(ProjectDto::getProjectNumber))
+                .sorted(Comparator.comparing(ProjectDtoForList::getProjectNumber))
                 .collect(Collectors.toList())
                 : projectService.findByCriteria(criteria, status)
                 .stream()
                 .map(Mapper::projectToProjectDtoForAll)
-                .sorted(Comparator.comparing(ProjectDto::getProjectNumber))
+                .sorted(Comparator.comparing(ProjectDtoForList::getProjectNumber))
                 .collect(Collectors.toList());
     }
 
@@ -98,21 +99,40 @@ public class ProjectController {
     @ResponseBody
     public void delete(@RequestBody List<ProjectDtoForList> list) {
         for (ProjectDtoForList pro : list) {
+            System.out.println(pro);
             if (!pro.getStatus().equals(StatusProject.New)) {
-                throw new RuntimeException("Project status must be new to delete");
+                throw new DeteleProjectNotNewStatusException();
             }
         }
         for (ProjectDtoForList pro : list) {
             this.projectService.deleteProject(pro.getProjectNumber());
         }
     }
+
     @GetMapping("/projectNumber/{id}")
     @ResponseBody
     public void checkId(@PathVariable Integer id) {
-        if(this.projectService.findById(id)!= null){
+        if (this.projectService.findById(id) != null) {
             throw new NumberExistException();
         }
     }
+
+    @PostMapping("/members")
+    @ResponseBody
+    public void checkMembers(@PathParam(value = "members") String members) {
+        List<String> allVisa = employeeService.getAllVisa();
+        String[] memberArr = members.split(",");
+        List<String> memberVisaNotFound = new ArrayList<>();
+        for (String member : memberArr) {
+            if (member.trim().length() != 3 || !allVisa.contains(member.trim())) {
+                memberVisaNotFound.add(member);
+            }
+        }
+        if (!memberVisaNotFound.isEmpty()) {
+            throw new VisaNotFoundException(memberVisaNotFound);
+        }
+    }
+
     @PostMapping("/update-project/{id}")
     @ResponseBody
     public void update(@PathVariable Integer id, @RequestBody ProjectDto projectDto) {

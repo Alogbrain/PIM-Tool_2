@@ -76,11 +76,14 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     this.projectService.deleteProjectList(this.deleteList).subscribe(
       res => {
         this.fetchData();
+        this.deleteList = [];
       }, rej => {
-        console.log('FAIL');
+        if (rej.error.errorName === 'DeleteProjectException') {
+          alert(rej.error.message);
+        }
       }
     );
-    this.deleteList = [];
+    // this.deleteList = [];
   }
   onSubmit(): void {
     if (this.status == null) {
