@@ -123,7 +123,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
           if (rej.errorName === 'DateException') {
             this.error = rej.message;
           }else if (rej.errorName === 'ConcurrentException'){
-            this.router.navigate(['error-page']);
+            // this.router.navigate(['error-page']);
             alert(rej.message);
           }
         }

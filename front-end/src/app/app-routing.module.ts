@@ -7,7 +7,7 @@ import {ListProjectComponent} from './projects-list/list-projects/list-project.c
 import {NewProjectComponent} from './projects-list/new-project/new-project.component';
 import {ErrorPageComponent} from './error-page/error-page.component';
 const routes: Routes = [
-  { path: '', redirectTo: '/projects', pathMatch: 'full' },
+  { path: '', redirectTo: '/projects/projects-list', pathMatch: 'full' },
   { path: 'error-page', component: ErrorPageComponent },
   { path: 'projects',
     component: ProjectsListComponent,

@@ -11,7 +11,7 @@
     <div class="form-group required">
       <label for="projectNumber" class="col-md-2 control-label" style="padding-right: 0px" translate >project-number</label>
       <div class="col-md-3">
-        <input type="number" [attr.disabled]="editMode ? 'disabled' : null" id="projectNumber" class="form-control"
+        <input type="number" [attr.disabled]="editMode ? 'disabled' : null" style="text-align: end" id="projectNumber" class="form-control"
                formControlName="number" pattern="^[1-9]+[0-9]*$" >
         <!--      *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched"-->
       </div>
@@ -19,43 +19,45 @@
         <span *ngIf="projectForm.get('number').errors?.numberProjectError" translate>
           number-project-already-exit
         </span>
+        <span *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched && !projectForm.get('number').errors.numberProjectError " translate>
+          missing-project-number
+        </span>
       </span>
     </div>
     <div class="form-group required">
       <label for="projectName" class="col-md-2 control-label" translate>project-name</label>
       <div class="col-md-9">
         <input type="text" id="projectName" class="form-control" formControlName="name">
-<!--        <span-->
-<!--          *ngIf="!projectForm.get('name').valid && projectForm.get('name').touched"-->
-<!--          class="help-block">-->
-<!--        The project name is invalid . Please select a different project name-->
-<!--        </span>-->
+        <span
+          *ngIf="!projectForm.get('name').valid && projectForm.get('name').touched"
+          class="help-block" translate>
+        missing-project-name
+        </span>
       </div>
     </div>
     <div class="form-group required">
       <label for="customer" class="col-md-2 control-label" translate>customer</label>
       <div class="col-md-9">
         <input type="text" id="customer" class="form-control" formControlName="customer">
-<!--        <span-->
-<!--          *ngIf="!projectForm.get('customer').valid && projectForm.get('customer').touched"-->
-<!--          class="help-block">-->
-<!--        Missing customer name-->
-<!--      </span>-->
+        <span
+          *ngIf="!projectForm.get('customer').valid && projectForm.get('customer').touched"
+          class="help-block" translate>
+        missing-customer-name
+      </span>
       </div>
     </div>
     <div class="form-group required">
       <label for="group" class="col-md-2 control-label" translate>group</label>
       <div class="col-md-3">
-        <select class="form-control" id="group" formControlName="group"
-                >
+        <select class="form-control" id="group" style="text-align:end" formControlName="group">
           <option *ngFor="let group of groups" [ngValue]="group.id">{{group.id}}</option>
         </select>
       </div>
-<!--      <span-->
-<!--        *ngIf="!projectForm.get('group').valid && projectForm.get('group').touched"-->
-<!--        class="help-block">-->
-<!--        Missing group-->
-<!--        </span>-->
+      <span
+        *ngIf="!projectForm.get('group').valid && projectForm.get('group').touched"
+        class="help-block" translate>
+        missing-group
+        </span>
     </div>
     <div class="form-group">
       <label for="member" class="col-md-2 control-label" translate>members</label>
@@ -77,32 +79,32 @@
           <option *ngFor="let status of statuses" [ngValue]="status">{{status}}</option>
         </select>
       </div>
-<!--      <span-->
-<!--        *ngIf="!projectForm.get('status').valid && projectForm.get('status').touched"-->
-<!--        class="help-block">-->
-<!--          Missing status-->
-<!--        </span>-->
+      <span
+        *ngIf="!projectForm.get('status').valid && projectForm.get('status').touched"
+        class="help-block" translate>
+          missing-status
+        </span>
     </div>
 
     <div class="form-group required">
       <label for="startDate" class="col-md-2 control-label" translate>start-date</label>
       <div class="col-md-3">
         <input type="date" class="form-control" id="startDate" formControlName="startDate"/>
-<!--        <span-->
-<!--          *ngIf="!projectForm.get('startDate').valid && projectForm.get('startDate').touched"-->
-<!--          class="help-block">-->
-<!--          Missing start date-->
-<!--        </span>-->
         <span
-          *ngIf="error"
+          *ngIf="!projectForm.get('startDate').valid && projectForm.get('startDate').touched"
           class="help-block" translate>
-        errorDate
-      </span>
+          missing-start-date
+        </span>
       </div>
       <div class="col-md-1"></div>
       <label for="endDate" class="col-md-2" style="margin-left: 0px" translate>end-date</label>
       <div class="col-md-3">
         <input type="date" class="form-control" id="endDate" formControlName="endDate"/>
+        <span
+          *ngIf="error"
+          class="help-block" translate>
+        errorDate
+      </span>
       </div>
 
     </div>
@@ -118,6 +120,9 @@
                 type="submit" translate>{{!editMode ? 'create-btn' : 'update-btn'}}</button>
       </div>
     </div>
+<!--    <button class="btn btn-default btn-create"-->
+<!--            type="submit" translate>{{!editMode ? 'create-btn' : 'update-btn'}}</button>-->
+<!--    <button class="btn btn-default btn-cancel" type="button" (click)="onCancel()" translate>cancel</button>-->
   </form>
 
 </div>

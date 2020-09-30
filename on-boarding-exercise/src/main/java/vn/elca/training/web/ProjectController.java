@@ -65,9 +65,7 @@ public class ProjectController {
     @GetMapping("/queryById/{id}")
     @ResponseBody
     public ProjectDto queryById(@PathVariable Integer id) {
-        ProjectDto projectDto = Mapper.projectToProjectDtoForOne(projectService.findById(id));
-        System.out.println(projectDto);
-        return projectDto;
+        return Mapper.projectToProjectDtoForOne(projectService.findById(id));
     }
 
     @GetMapping("/groups")
@@ -86,33 +84,33 @@ public class ProjectController {
         if (project.getEndDate() != null && project.getStartDate().isAfter(project.getEndDate())) {
             throw new StartDateGreaterThanEndDateException();
         }
-        this.projectService.createNewProject(project);
+        projectService.createNewProject(project);
     }
 
     @PostMapping("/delete-project")
     @ResponseBody
     public void delete(@RequestParam(value = "id") Integer index) {
-        this.projectService.deleteProject(index);
+        projectService.deleteProject(index);
     }
 
     @PostMapping("/delete-project-list")
     @ResponseBody
     public void delete(@RequestBody List<ProjectDtoForList> list) {
         for (ProjectDtoForList pro : list) {
-            System.out.println(pro);
             if (!pro.getStatus().equals(StatusProject.New)) {
-                throw new DeteleProjectNotNewStatusException();
+                throw new DeteleProjectNotNewStatusException(pro.getProjectNumber());
             }
         }
         for (ProjectDtoForList pro : list) {
-            this.projectService.deleteProject(pro.getProjectNumber());
+            projectService.deleteProject(pro.getProjectNumber());
         }
+
     }
 
     @GetMapping("/projectNumber/{id}")
     @ResponseBody
     public void checkId(@PathVariable Integer id) {
-        if (this.projectService.findById(id) != null) {
+        if (projectService.findById(id) != null) {
             throw new NumberExistException();
         }
     }
@@ -140,7 +138,6 @@ public class ProjectController {
         if (project.getEndDate() != null && project.getStartDate().isAfter(project.getEndDate())) {
             throw new StartDateGreaterThanEndDateException();
         }
-        System.out.println("NNN"+ project);
-        this.projectService.updateProject(id, project);
+        projectService.updateProject(id, project);
     }
 }

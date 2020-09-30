@@ -15,7 +15,7 @@ public class Group implements Serializable {
     @GeneratedValue
     private Long id;
 
-    @Column
+    @Column()
     private Integer version;
     //    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
 //    private Set<Employee> groupLeader = new HashSet<>();

@@ -47,7 +47,6 @@ public class ProjectServiceImpl implements ProjectService {
 //                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase()));
 //        }
 
-
         if (status == null && !criteria.equals("")) {
             try {
                 Integer id = Integer.parseInt(criteria);
@@ -109,19 +108,19 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public void deleteProject(Integer id) {
+    public void deleteProject(Integer projectNumber) {
         Project project = new JPAQuery<Project>(em)
                 .from(QProject.project)
-                .where(QProject.project.projectNumber.eq(id))
+                .where(QProject.project.projectNumber.eq(projectNumber))
                 .fetchFirst();
         projectRepository.delete(project);
     }
 
     @Override
-    public void updateProject(Integer id, Project crrProject) {
+    public void updateProject(Integer projectNumber, Project crrProject) {
         Project newProject = new JPAQuery<Project>(em)
                 .from(QProject.project)
-                .where(QProject.project.projectNumber.eq(id))
+                .where(QProject.project.projectNumber.eq(projectNumber))
                 .fetchFirst();
         crrProject.setId(newProject.getId());
         try {

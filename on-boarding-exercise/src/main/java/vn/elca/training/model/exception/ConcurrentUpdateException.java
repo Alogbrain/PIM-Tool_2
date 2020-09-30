@@ -4,6 +4,6 @@ import java.util.List;
 
 public class ConcurrentUpdateException extends RuntimeException{
     public ConcurrentUpdateException(){
-        super("Need to reload page to update project");
+        super("this project is already updated by other user. you need to reload page to update project");
     }
 }

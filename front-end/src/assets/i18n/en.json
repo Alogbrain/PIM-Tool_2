@@ -32,5 +32,11 @@
   "col-delete": "Delete",
   "number-project-already-exit": "The project number is existed. Please select a different project number",
   "visa-not-exist": "The following visas do not exist:",
-  "errorDate": "End date must is greater than start date"
+  "errorDate": "End date must be greater than start date",
+  "missing-project-number": "Missing project number",
+  "missing-project-name": "Missing project name",
+  "missing-customer-name": "Missing customer name",
+  "missing-group": "Missing group",
+  "missing-status": "Missing status",
+  "missing-start-date": "Missing start date"
 }
