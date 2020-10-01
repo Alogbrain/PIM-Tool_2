@@ -4,11 +4,11 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
 import {ProjectService} from '../project.service';
 import {Subscription} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {formatDate} from '@angular/common';
 import {Project} from '../project.model';
 import {Group} from '../group.model';
 import {ProjectNumberValidator} from '../../shared/validator/ProjectNumber.validator';
 import {MembersValidator} from '../../shared/validator/Members.validator';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-new-project',
@@ -34,8 +34,9 @@ export class NewProjectComponent implements OnInit, OnDestroy {
               private projectService: ProjectService,
               private router: Router,
               private http: HttpClient,
-              private  checkProjectNumber: ProjectNumberValidator,
-              private checkMembers: MembersValidator
+              private checkProjectNumber: ProjectNumberValidator,
+              private checkMembers: MembersValidator,
+              private translate: TranslateService
   ) {
   }
 
@@ -44,14 +45,14 @@ export class NewProjectComponent implements OnInit, OnDestroy {
     this.paramsSubscription = this.route.params
       .subscribe(
         (params: Params) => {
-          this.id = params['id'];
+          this.id = params.id;
           this.initForm();
         }
       );
     this.queryParamsSubscription = this.route.queryParams
       .subscribe(
         (queryParams: Params) => {
-          this.editMode = queryParams['allowEdit'] === '1' ? true : false;
+          this.editMode = queryParams.allowEdit === '1' ? true : false;
         }
       );
 
@@ -59,42 +60,37 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   }
 
   onCancel(): void {
-    if (this.editMode) {
-      this.router.navigate(['projects/projects-list']);
+    if (this.projectForm.touched) {
+      const message = this.translate.instant('alert-cancel');
+      if (confirm(message)) {
+        this.router.navigate(['projects/projects-list']);
+      }
     } else {
       this.router.navigate(['projects/projects-list']);
     }
     // console.log(this.projectService.getProjects());
   }
 
-  onSubmit(): void {
-    this.projectForm.markAllAsTouched();
-    if (this.editMode) {
-      // console.log(this.project);
-      if (!this.projectForm.valid) {
-        this.isAlert = true;
-      }else{
-        this.isAlert = false;
-        this.updateProject();
-      }
-    } else {
-      if (!this.projectForm.valid) {
-        this.isAlert = true;
-      } else {
-        this.isAlert = false;
+  // checkInputRequired(): boolean {
+  //   const form: FormGroup  = this.projectForm;
+  //   form.get('number').valid
+  // }
 
-        this.projectForm.markAllAsTouched();
+  onSubmit(): void {
+    // this.projectForm.markAllAsTouched();
+    console.log(this.projectForm);
+    if (this.projectForm.invalid) {
+      this.isAlert = true;
+      console.log('A');
+    } else {
+      console.log('B');
+      this.isAlert = false;
+      if (this.editMode) {
+        this.updateProject();
+      } else {
         this.addNewProject();
       }
     }
-    // if (this.projectForm.touched && this.projectForm.valid){
-    //   console.log('ssssaaaaa');
-    //   if (this.editMode){
-    //     console.log("SSS");
-    //   }else{
-    //     console.log("crate");
-    //   }
-    // }
   }
 
   addNewProject(): void {
@@ -122,7 +118,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
         }, rej => {
           if (rej.errorName === 'DateException') {
             this.error = rej.message;
-          }else if (rej.errorName === 'ConcurrentException'){
+          } else if (rej.errorName === 'ConcurrentException') {
             // this.router.navigate(['error-page']);
             alert(rej.message);
           }
@@ -143,19 +139,19 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   }
 
   private getProject(): Project {
-    let crrgroup: Group = {id: Number(this.projectForm.get('group').value)};
-    let crrProject: Project = {
+    const currentGroup: Group = {id: Number(this.projectForm.get('group').value)};
+    const crrurentProject: Project = {
       projectNumber: this.projectForm.get('number').value,
       name: this.projectForm.get('name').value,
       customer: this.projectForm.get('customer').value,
-      group: crrgroup,
+      group: currentGroup,
       members: this.projectForm.get('members').value,
       status: this.projectForm.get('status').value,
       startDate: this.projectForm.get('startDate').value,
       endDate: this.projectForm.get('endDate').value,
       version: this.project.version
     };
-    return crrProject;
+    return crrurentProject;
   }
 
   private initForm(): void {
@@ -164,14 +160,14 @@ export class NewProjectComponent implements OnInit, OnDestroy {
         res => {
           this.project = res;
           this.projectForm.patchValue({
-            'number': this.project.projectNumber,
-            'name': this.project.name,
-            'customer': this.project.customer,
-            'group': this.project.group.id,
-            'members': this.project.members,
-            'status': this.project.status,
-            'startDate': this.project.startDate,
-            'endDate': this.project.endDate,
+            number: this.project.projectNumber,
+            name: this.project.name,
+            customer: this.project.customer,
+            group: this.project.group.id,
+            members: this.project.members,
+            status: this.project.status,
+            startDate: this.project.startDate,
+            endDate: this.project.endDate,
           });
         });
     }
@@ -183,7 +179,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
       name: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       customer: new FormControl(null, [Validators.required, Validators.maxLength(50)]),
       group: new FormControl(null, Validators.required),
-      members: new FormControl( this.project.members, {
+      members: new FormControl(this.project.members, {
         asyncValidators: [this.checkMembers.membersValidator()], updateOn: 'blur'
       }),
       status: new FormControl('New', Validators.required),

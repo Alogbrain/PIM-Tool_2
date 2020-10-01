@@ -2,7 +2,7 @@
   <div style="font-weight: bold; color: #666666" translate>{{!editMode ? 'title-new-project' : 'title-edit-project'}}</div>
   <hr>
   <form [formGroup]="projectForm" (ngSubmit)="onSubmit()" class="form-horizontal">
-    <div *ngIf="!projectForm.valid && isAlert" class="alert alert-danger alert-dismissible show ">
+    <div *ngIf="isAlert" class="alert alert-danger alert-dismissible show ">
       <strong translate>miss-form-error</strong>
       <button type="button" class="close" (click)="onCancelAlert()">
         <span aria-hidden="true">&times;</span>
@@ -76,7 +76,7 @@
       <label for="status" class="col-md-2 control-label" translate>status</label>
       <div class="col-md-3">
         <select class="form-control" id="status" formControlName="status">
-          <option *ngFor="let status of statuses" [ngValue]="status">{{status}}</option>
+          <option *ngFor="let status of statuses" [ngValue]="status" translate>{{status}}</option>
         </select>
       </div>
       <span

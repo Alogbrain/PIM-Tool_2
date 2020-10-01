@@ -3,7 +3,6 @@ package vn.elca.training.model.dto;
 import vn.elca.training.model.entity.Group;
 import vn.elca.training.model.entity.StatusProject;
 
-import java.time.LocalDate;
 
 /**
  * @author gtn

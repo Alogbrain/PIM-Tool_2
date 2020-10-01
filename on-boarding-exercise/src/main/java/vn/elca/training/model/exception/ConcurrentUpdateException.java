@@ -1,9 +1,7 @@
 package vn.elca.training.model.exception;
 
-import java.util.List;
-
-public class ConcurrentUpdateException extends RuntimeException{
+public class ConcurrentUpdateException extends Exception{
     public ConcurrentUpdateException(){
-        super("this project is already updated by other user. you need to reload page to update project");
+        super("This project is updated by other user. You need to reload page to update project.");
     }
 }

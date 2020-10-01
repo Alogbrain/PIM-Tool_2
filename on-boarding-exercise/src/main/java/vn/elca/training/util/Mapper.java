@@ -59,7 +59,7 @@ public class Mapper {
         return dto;
     }
 
-    public static Project projectDtoToProject(ProjectDto entity, EmployeeService employeeService) {
+    public static Project projectDtoToProject(ProjectDto entity, EmployeeService employeeService) throws VisaNotFoundException {
         // fetch entity from database
         // detached entity
         // copy data from dto to entity
@@ -92,7 +92,6 @@ public class Mapper {
             List<Employee> employeeList = new ArrayList<>();
             project.setEmployees(employeeList);
         }
-//        System.out.println(project);
         return project;
     }
 

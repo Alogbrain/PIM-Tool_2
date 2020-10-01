@@ -3,6 +3,7 @@ package vn.elca.training.service.impl;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import vn.elca.training.model.entity.Employee;
 import vn.elca.training.model.entity.QEmployee;
 import vn.elca.training.repository.EmployeeRepository;
@@ -13,6 +14,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Service
+@Transactional
 public class EmployeeServiceImpl implements EmployeeService {
     @PersistenceContext
     private EntityManager em;

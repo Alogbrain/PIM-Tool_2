@@ -1,6 +1,6 @@
 package vn.elca.training.model.exception;
 
-public class NumberExistException extends RuntimeException {
+public class NumberExistException extends Exception {
     public NumberExistException(){
 //        super(String.format("The project number %d is existed. Please select a different project number", id));
     }

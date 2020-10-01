@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import vn.elca.training.model.exception.*;
@@ -33,7 +32,6 @@ public class ControllerAdvisor {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("message", ex.getMessage());
         body.put("errorName", "DateException");
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = ConcurrentUpdateException.class)
@@ -42,7 +40,7 @@ public class ControllerAdvisor {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("message", ex.getMessage());
         body.put("errorName", "ConcurrentException");
-        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(value = DeteleProjectNotNewStatusException.class)
     @ResponseBody
@@ -50,6 +48,6 @@ public class ControllerAdvisor {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("message", ex.getMessage());
         body.put("errorName", "DeleteProjectException");
-        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }

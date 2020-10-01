@@ -13,4 +13,5 @@ import vn.elca.training.repository.custom.ProjectRespositoryCustom;
  */
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long>, QueryDslPredicateExecutor<Project> , ProjectRespositoryCustom {
+    void deleteProjectByProjectNumber (Integer projectNumber);
 }

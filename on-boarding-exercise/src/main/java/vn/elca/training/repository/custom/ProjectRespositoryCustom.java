@@ -6,5 +6,5 @@ import vn.elca.training.model.entity.Project;
 import java.util.List;
 
 public interface ProjectRespositoryCustom {
-    Project findProjectById(Integer id);
+    Project findProjectById(Long id);
 }

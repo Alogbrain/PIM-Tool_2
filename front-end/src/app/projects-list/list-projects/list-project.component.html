@@ -7,12 +7,12 @@
         <input type="search" class="form-control"
                [(ngModel)]="criteria"
                formControlName="search"
-               placeholder="Project number, name, customer name">
+               placeholder="{{'search-criteria' | translate}}">
       </div>
       <div class="form-group col-md-3">
-        <select class="form-control" [(ngModel)]="status" formControlName="status">
-          <!--          <option value="Project Status" hidden>Project Status</option>-->
-          <option *ngFor="let status of statuses" [ngValue]="status">{{status}}</option>
+        <select class="form-control" [(ngModel)]="status" formControlName="status" >
+<!--          <option [value]="null" [disabled]="true">Project Status</option>-->
+          <option *ngFor="let status of statuses" [ngValue]="status" translate>{{status}}</option>
         </select>
       </div>
       <div class="form-group col-md-2">
@@ -37,25 +37,22 @@
     <tbody>
 
     <tr *ngFor="let project of projects;">
-      <td style="text-align: center;"><input type="checkbox" style="height: 15px; width: 15px" (change)="onChangeItemDelete($event, project)"/></td>
+      <td style="text-align: center;"><input type="checkbox" style="height: 15px; width: 15px"
+                                             (change)="onChangeItemDelete($event, project)"/></td>
       <td style="text-align: end">
         <a style="cursor: pointer"
-           [routerLink]="['../', project.projectNumber,'edit']"
+           [routerLink]="['../', project.id,'edit']"
            [queryParams]="{allowEdit: '1'}">
           {{ project.projectNumber }}
         </a>
       </td>
       <td>{{ project.name }}</td>
-      <td>{{ project.status }}</td>
+      <td translate>{{ project.status }}</td>
       <td>{{ project.customer }}</td>
-      <td style="text-align: center">{{ project.startDate}}</td>
+      <td style="text-align: center">{{ project.startDate | date:'dd/MM/yyyy'}}</td>
       <td style="text-align: center">
-        <p data-placement="top" data-toggle="tooltip" title="Delete" *ngIf="project.status === 'New'">
-          <button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal"
-                  (click)="deleteProject(project.projectNumber)"
-                  data-target="#delete"><span
-            class="glyphicon glyphicon-trash"></span></button>
-        </p>
+            <span *ngIf="project.status === 'New'" style="color: orangered; cursor: pointer; margin: 0px"
+                  (click)="deleteProject(project.projectNumber)" class="glyphicon glyphicon-trash"></span>
       </td>
     </tr>
     </tbody>
@@ -64,9 +61,8 @@
       <td colspan="100%">
         <div style="display: flex; justify-content: space-between">
           <div style="color: #2F85FA">{{deleteList.length}} items selected</div>
-          <div style="color: orangered">delete selected items
-            <button (click)="deleteListProjects()" class="btn btn-danger btn-xs"><span
-              class="glyphicon glyphicon-trash"></span></button>
+          <div style="color: orangered; margin-right: 25px">delete selected items
+            <span class="glyphicon glyphicon-trash" (click)="deleteListProjects()" style="cursor: pointer"></span>
           </div>
         </div>
       </td>

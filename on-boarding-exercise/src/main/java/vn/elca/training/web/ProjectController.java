@@ -1,7 +1,6 @@
 package vn.elca.training.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import vn.elca.training.model.dto.ProjectDtoForList;
 import vn.elca.training.model.exception.*;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
  * @author gtn
  */
 @RestController
-@Transactional
 @RequestMapping("/projects")
 public class ProjectController {
 
@@ -47,7 +45,7 @@ public class ProjectController {
 
     @PostMapping("/search")
     @ResponseBody
-    public List<ProjectDtoForList> Search(@RequestParam(value = "status", defaultValue = "", required = false)
+    public List<ProjectDtoForList> search(@RequestParam(value = "status", defaultValue = "", required = false)
                                                   StatusProject status, @RequestParam("criteria") String criteria) {
         return ("".equals(criteria) && status == null)
                 ? projectService.findAll()
@@ -64,7 +62,7 @@ public class ProjectController {
 
     @GetMapping("/queryById/{id}")
     @ResponseBody
-    public ProjectDto queryById(@PathVariable Integer id) {
+    public ProjectDto queryById(@PathVariable Long id) {
         return Mapper.projectToProjectDtoForOne(projectService.findById(id));
     }
 
@@ -79,11 +77,9 @@ public class ProjectController {
 
     @PostMapping("/create-project")
     @ResponseBody
-    public void create(@RequestBody ProjectDto projectDto) {
+    public void create(@RequestBody ProjectDto projectDto)
+            throws NumberExistException, StartDateGreaterThanEndDateException, VisaNotFoundException {
         Project project = Mapper.projectDtoToProject(projectDto, employeeService);
-        if (project.getEndDate() != null && project.getStartDate().isAfter(project.getEndDate())) {
-            throw new StartDateGreaterThanEndDateException();
-        }
         projectService.createNewProject(project);
     }
 
@@ -95,29 +91,21 @@ public class ProjectController {
 
     @PostMapping("/delete-project-list")
     @ResponseBody
-    public void delete(@RequestBody List<ProjectDtoForList> list) {
-        for (ProjectDtoForList pro : list) {
-            if (!pro.getStatus().equals(StatusProject.New)) {
-                throw new DeteleProjectNotNewStatusException(pro.getProjectNumber());
-            }
-        }
-        for (ProjectDtoForList pro : list) {
-            projectService.deleteProject(pro.getProjectNumber());
-        }
-
+    public void delete(@RequestBody List<ProjectDtoForList> list) throws DeteleProjectNotNewStatusException {
+        projectService.deleteProjectsList(list);
     }
 
-    @GetMapping("/projectNumber/{id}")
+    @GetMapping("/projectNumber/{projectNumber}")
     @ResponseBody
-    public void checkId(@PathVariable Integer id) {
-        if (projectService.findById(id) != null) {
+    public void checkProjectNumber(@PathVariable Integer projectNumber) throws NumberExistException {
+        if (projectService.findByProjectNumber(projectNumber) != null) {
             throw new NumberExistException();
         }
     }
 
     @PostMapping("/members")
     @ResponseBody
-    public void checkMembers(@PathParam(value = "members") String members) {
+    public void checkMembers(@PathParam(value = "members") String members) throws VisaNotFoundException {
         List<String> allVisa = employeeService.getAllVisa();
         String[] memberArr = members.split(",");
         List<String> memberVisaNotFound = new ArrayList<>();
@@ -133,11 +121,10 @@ public class ProjectController {
 
     @PostMapping("/update-project/{id}")
     @ResponseBody
-    public void update(@PathVariable Integer id, @RequestBody ProjectDto projectDto) {
+    public void update(@PathVariable Long id, @RequestBody ProjectDto projectDto)
+            throws ConcurrentUpdateException, StartDateGreaterThanEndDateException, VisaNotFoundException {
         Project project = Mapper.projectDtoToProject(projectDto, employeeService);
-        if (project.getEndDate() != null && project.getStartDate().isAfter(project.getEndDate())) {
-            throw new StartDateGreaterThanEndDateException();
-        }
-        projectService.updateProject(id, project);
+        project.setId(id);
+        projectService.updateProject(project);
     }
 }

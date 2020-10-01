@@ -4,7 +4,7 @@
   "miss-form-error": "Please enter all the mandatory fields(*)",
   "project-number": "Project Number",
   "project-name": "Project Name",
-  "customer" : "Customer",
+  "customer": "Customer",
   "group": "Group",
   "members": "Members",
   "status": "Status",
@@ -21,7 +21,7 @@
   "title": "Project Information Management",
   "help": "Help",
   "log-out": "Log out",
-  "projects-list-title":"Projects List",
+  "projects-list-title": "Projects List",
   "search-project": "Search Project",
   "reset-search": "Reset Search",
   "col-number": "Number",
@@ -38,5 +38,13 @@
   "missing-customer-name": "Missing customer name",
   "missing-group": "Missing group",
   "missing-status": "Missing status",
-  "missing-start-date": "Missing start date"
+  "missing-start-date": "Missing start date",
+  "alert-cancel": "Are you sure cancel this change?",
+  "alert-delete-project": "Are you sure to delete project ",
+  "alert-delete-project-list": "Are you sure to delete project list?",
+  "New": "New",
+  "Inprogress": "In Progress",
+  "Finished": "Finished",
+  "Planned": "Planned",
+  "search-criteria": "Project number, name, customer name"
 }

@@ -6,13 +6,21 @@ import java.util.List;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
+import org.springframework.transaction.annotation.Transactional;
+import vn.elca.training.model.dto.ProjectDtoForList;
+import vn.elca.training.model.entity.QGroup;
 import vn.elca.training.model.exception.ConcurrentUpdateException;
+import vn.elca.training.model.exception.DeteleProjectNotNewStatusException;
 import vn.elca.training.model.exception.NumberExistException;
 import vn.elca.training.model.entity.QProject;
 import vn.elca.training.model.entity.StatusProject;
+import vn.elca.training.model.exception.StartDateGreaterThanEndDateException;
 import vn.elca.training.repository.ProjectRepository;
 import vn.elca.training.model.entity.Project;
 import vn.elca.training.service.ProjectService;
@@ -24,6 +32,8 @@ import javax.persistence.PersistenceContext;
  * @author vlp
  */
 @Service
+@Transactional(rollbackFor = {ConcurrentUpdateException.class, NumberExistException.class,
+        DeteleProjectNotNewStatusException.class, StartDateGreaterThanEndDateException.class})
 public class ProjectServiceImpl implements ProjectService {
 
     @PersistenceContext
@@ -90,12 +100,24 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public Project findById(Integer id) {
+    public Project findById(Long id) {
         return projectRepository.findProjectById(id);
     }
 
     @Override
-    public void createNewProject(Project project) {
+    public Project findByProjectNumber(Integer projectNumber) {
+        return new JPAQuery<Project>(em)
+                .from(QProject.project)
+                .innerJoin(QProject.project.group, QGroup.group).fetchJoin()
+                .where(QProject.project.projectNumber.eq(projectNumber))
+                .fetchOne();
+    }
+
+    @Override
+    public void createNewProject(Project project) throws NumberExistException, StartDateGreaterThanEndDateException {
+        if (project.getEndDate() != null && project.getStartDate().isAfter(project.getEndDate())) {
+            throw new StartDateGreaterThanEndDateException();
+        }
         Project currProject = new JPAQuery<Project>(em)
                 .from(QProject.project)
                 .where(QProject.project.projectNumber.eq(project.getProjectNumber()))
@@ -109,23 +131,30 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public void deleteProject(Integer projectNumber) {
-        Project project = new JPAQuery<Project>(em)
-                .from(QProject.project)
-                .where(QProject.project.projectNumber.eq(projectNumber))
-                .fetchFirst();
-        projectRepository.delete(project);
+        projectRepository.deleteProjectByProjectNumber(projectNumber);
     }
 
     @Override
-    public void updateProject(Integer projectNumber, Project crrProject) {
-        Project newProject = new JPAQuery<Project>(em)
-                .from(QProject.project)
-                .where(QProject.project.projectNumber.eq(projectNumber))
-                .fetchFirst();
-        crrProject.setId(newProject.getId());
+    public void deleteProjectsList(List<ProjectDtoForList> list) throws DeteleProjectNotNewStatusException {
+        for (ProjectDtoForList project : list) {
+            if (project.getStatus() != StatusProject.New) {
+                throw new DeteleProjectNotNewStatusException(project.getProjectNumber());
+            }
+        }
+        for (ProjectDtoForList project : list) {
+            projectRepository.deleteProjectByProjectNumber(project.getProjectNumber());
+        }
+    }
+
+    @Override
+    public void updateProject(Project newProject)
+            throws ConcurrentUpdateException, StartDateGreaterThanEndDateException {
+        if (newProject.getEndDate() != null && newProject.getStartDate().isAfter(newProject.getEndDate())) {
+            throw new StartDateGreaterThanEndDateException();
+        }
         try {
-            projectRepository.save(crrProject);
-        } catch (RuntimeException e) {
+            projectRepository.save(newProject);
+        } catch (OptimisticLockingFailureException e) {
             throw new ConcurrentUpdateException();
         }
     }

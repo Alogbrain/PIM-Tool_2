@@ -20,24 +20,32 @@ export class ProjectService {
   //     startDate: '', endDate: ''
   //   },
   // ];
-
+  criteria = '';
+  status = '';
   private projects: Project[] = [];
 
   constructor(private http: HttpClient) {
   }
 
+  setCriteriaAndStatus(criteria, status): void{
+    this.criteria = criteria;
+    this.status = status;
+  }
+  getCriteriaAndStatus(): any {
+    return {criteria: this.criteria, status: this.status};
+  }
   getProjects(): Observable<Project[]> {
     const url = 'api/projects/query';
     // this.projectsChanged.next(this.projects);
-    return this.http.get<Project[]>(url)
-      .pipe(map(responseData => {
-          const projectArray: Project[] = [];
-          for (const key of responseData) {
-            projectArray.push(key);
-          }
-          return projectArray;
-        })
-      );
+    return this.http.get<Project[]>(url);
+      // .pipe(map(responseData => {
+      //     const projectArray: Project[] = [];
+      //     for (const key of responseData) {
+      //       projectArray.push(key);
+      //     }
+      //     return projectArray;
+      //   })
+      // );
   }
 
   searchProjects(criteria: string, status: string): Observable<Project[]> {

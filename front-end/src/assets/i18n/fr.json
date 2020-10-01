@@ -38,5 +38,13 @@
   "missing-customer-name": "FR: Missing customer name",
   "missing-group": "FR: Missing group",
   "missing-status": "FR: Missing status",
-  "missing-start-date": "FR: Missing start date"
+  "missing-start-date": "FR: Missing start date",
+  "alert-cancel": "FR: Are you sure cancel this change?",
+  "alert-delete-project": "FR: Are you sure to delete project ",
+  "alert-delete-project-list": "FR: Are you sure to delete project list?",
+  "New": "FR: New",
+  "Inprogress": "FR: In Progress",
+  "Finished": "FR: Finished",
+  "Planned": "FR: Planned",
+  "search-criteria": "FR: Project number, name, customer name"
 }
