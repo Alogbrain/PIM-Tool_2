@@ -12,7 +12,13 @@ VALUES
     (2, 'CXTRANET', 'Inprogress' , 'ANNA', '2020-04-25','2020-04-28',2),
     (3, 'CRYSTAL BALL', 'New' , 'ATHUR', '2020-04-28', '2020-06-07',1),
     (4, 'IOC CLIENT EXTRANET', 'Finished' , 'BEN', '2020-06-07', '2020-06-08',2),
-    (1, 'KSTA MIGRATION', 'Planned' , 'BRUCE' , '2020-06-08','2020-06-25',2);
+    (1, 'KSTA MIGRATION', 'Planned' , 'BRUCE' , '2020-06-08','2020-06-25',2),
+    (96, 'JUMAJI', 'New' , 'JOHN' ,'2020-04-20','2020-04-25',1),
+    (97, 'US', 'Inprogress' , 'ANNA', '2020-04-25','2020-04-28',1),
+    (98, 'GET OUT', 'New' , 'ATHUR', '2020-04-28', '2020-06-07',1),
+    (99, 'ROM', 'Finished' , 'BEN', '2020-06-07', '2020-06-08',1),
+    (100, 'TENET', 'New' , 'BRUCE' , '2020-06-08','2020-06-25',1),
+    (101, 'AVENGERS', 'New' , 'CAPS' , '2020-06-08','2020-06-25',1);
 
 
 

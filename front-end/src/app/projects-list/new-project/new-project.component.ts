@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {ProjectService} from '../project.service';
@@ -37,9 +37,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
               private checkProjectNumber: ProjectNumberValidator,
               private checkMembers: MembersValidator,
               private translate: TranslateService
-  ) {
-  }
-
+  ) {}
   ngOnInit(): void {
     this.initGroups();
     this.paramsSubscription = this.route.params
@@ -52,11 +50,14 @@ export class NewProjectComponent implements OnInit, OnDestroy {
     this.queryParamsSubscription = this.route.queryParams
       .subscribe(
         (queryParams: Params) => {
-          this.editMode = queryParams.allowEdit === '1' ? true : false;
+          this.editMode = queryParams.allowEdit === '1';
         }
       );
-
     this.initForm();
+    window.addEventListener('beforeunload',  (e) => {
+      e.returnValue = 'Your data will be lost!';
+      return e;
+    });
   }
 
   onCancel(): void {
@@ -77,7 +78,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   // }
 
   onSubmit(): void {
-    // this.projectForm.markAllAsTouched();
+    this.projectForm.markAllAsTouched();
     console.log(this.projectForm);
     if (this.projectForm.invalid) {
       this.isAlert = true;
@@ -110,7 +111,7 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   updateProject(): void {
     this.project = this.getProject();
     console.log(this.project);
-    this.projectService.updateProject(this.id, this.project)
+    this.projectService.updateProject(this.project)
       .subscribe(
         res => {
           this.projectForm.reset();
@@ -139,19 +140,20 @@ export class NewProjectComponent implements OnInit, OnDestroy {
   }
 
   private getProject(): Project {
-    const currentGroup: Group = {id: Number(this.projectForm.get('group').value)};
-    const crrurentProject: Project = {
+    const group: Group = {id: Number(this.projectForm.get('group').value)};
+    const project: Project = {
+      id: this.project.id,
       projectNumber: this.projectForm.get('number').value,
       name: this.projectForm.get('name').value,
       customer: this.projectForm.get('customer').value,
-      group: currentGroup,
+      group: group,
       members: this.projectForm.get('members').value,
       status: this.projectForm.get('status').value,
       startDate: this.projectForm.get('startDate').value,
       endDate: this.projectForm.get('endDate').value,
       version: this.project.version
     };
-    return crrurentProject;
+    return project;
   }
 
   private initForm(): void {

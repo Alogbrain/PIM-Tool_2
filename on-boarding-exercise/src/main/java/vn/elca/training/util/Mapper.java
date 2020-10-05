@@ -64,6 +64,7 @@ public class Mapper {
         // detached entity
         // copy data from dto to entity
         Project project = new Project();
+        project.setId(entity.getId());
         project.setProjectNumber(entity.getProjectNumber());
         project.setName(entity.getName());
         project.setStatus(entity.getStatus());

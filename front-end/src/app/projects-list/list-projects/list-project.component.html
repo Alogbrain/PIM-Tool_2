@@ -10,8 +10,8 @@
                placeholder="{{'search-criteria' | translate}}">
       </div>
       <div class="form-group col-md-3">
-        <select class="form-control" [(ngModel)]="status" formControlName="status" >
-<!--          <option [value]="null" [disabled]="true">Project Status</option>-->
+        <select class="form-control" [(ngModel)]="status" formControlName="status">
+          <!--          <option [value]="null" [disabled]="true">Project Status</option>-->
           <option *ngFor="let status of statuses" [ngValue]="status" translate>{{status}}</option>
         </select>
       </div>
@@ -70,16 +70,9 @@
     </tfoot>
   </table>
   <div class="clearfix"></div>
-  <!--  <ul class="pagination pull-right" id="pagination-custom">-->
-  <!--    <li class="disabled"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>-->
-  <!--    &lt;!&ndash;    <li><a href="#"><img src="assets/img/previous_page.png"></a></li>&ndash;&gt;-->
-  <!--    <li class="active"><a href="#">1</a></li>-->
-  <!--    <li><a href="#">2</a></li>-->
-  <!--    <li><a href="#">3</a></li>-->
-  <!--    <li><a href="#">4</a></li>-->
-  <!--    <li><a href="#">5</a></li>-->
-  <!--    &lt;!&ndash;    <li><a href="#"><img src="assets/img/nextpage_icon.png"></a></li>&ndash;&gt;-->
-  <!--    <li><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>-->
-  <!--  </ul>-->
-  <!--  <button class="btn btn-primary" (click)="fetchData()">fetch Data</button>-->
+  <ul class="pagination pull-right" id="pagination-custom">
+    <li class="disabled"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+    <li *ngFor="let index of sizeProject"><a style="cursor: pointer" (click)="pagination(index-1)">{{index}}</a></li>
+    <li><a><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+  </ul>
 </div>

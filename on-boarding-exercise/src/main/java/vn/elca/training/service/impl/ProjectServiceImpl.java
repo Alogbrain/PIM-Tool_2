@@ -9,6 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
@@ -43,60 +47,42 @@ public class ProjectServiceImpl implements ProjectService {
     private ProjectRepository projectRepository;
 
     @Override
-    public List<Project> findAll() {
-        return projectRepository.findAll();
+    public List<Project> findAll(Integer index) {
+        return projectRepository.findAll(new PageRequest(index,5, new Sort("projectNumber"))).getContent();
     }
 
     @Override
-    public List<Project> findByCriteria(String criteria, StatusProject status) {
+    public Long getSizeProjects() {
+        return new JPAQuery<Long>(em)
+                .from(QProject.project)
+                .fetchCount();
+    }
 
-//        BooleanExpression expr = QProject.project.id.isNotNull();
-//
-//        if (StringUtils.isNotBlank(criteria)) {
-//            expr = expr.and(QProject.project.name.equalsIgnoreCase(criteria).or(QProject.project.customer.equalsIgnoreCase(criteria))
-//                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase()));
-//        }
+    @Override
+    public List<Project> findByCriteria(String criteria, StatusProject status, Integer index) {
 
-        if (status == null && !criteria.equals("")) {
-            try {
-                Integer id = Integer.parseInt(criteria);
-                return new JPAQuery<Project>(em)
-                        .from(QProject.project)
-                        .where(QProject.project.projectNumber.eq(id))
-                        .fetch();
-            } catch (NumberFormatException e) {
-                System.out.println(e);
+        final Integer LIMIT_PROJECT = 5;
+        BooleanExpression expr = null;
+
+        if(StringUtils.isNotBlank(criteria)){
+            expr = (QProject.project.name.containsIgnoreCase(criteria))
+                    .or(QProject.project.customer.containsIgnoreCase(criteria))
+                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase(criteria));
+            if(status != null){
+             expr = expr.and(QProject.project.status.eq(status));
             }
-            return new JPAQuery<Project>(em)
-                    .from(QProject.project)
-                    .where(QProject.project.name.containsIgnoreCase(criteria).
-                            or(QProject.project.customer.containsIgnoreCase(criteria)))
-//                    .or(QProject.project.projectNumber.stringValue().containsIgnoreCase()))
-                    .fetch();
-        } else if (status != null && criteria.equals("")) {
-            return new JPAQuery<Project>(em)
-                    .from(QProject.project)
-                    .where(QProject.project.status.eq(status))
-                    .fetch();
-        } else {
-            try {
-                Integer id = Integer.parseInt(criteria);
-                return new JPAQuery<Project>(em)
-                        .from(QProject.project)
-                        .where(QProject.project.projectNumber.eq(id).and(QProject.project.status.eq(status)))
-                        .fetch();
-            } catch (NumberFormatException e) {
-                System.out.println(e);
-            }
-            return new JPAQuery<Project>(em)
-                    .from(QProject.project)
-                    .where((QProject.project.name.containsIgnoreCase(criteria)
-                            .or(QProject.project.customer.containsIgnoreCase(criteria)))
-                            .and(QProject.project.status.eq(status)))
-                    .orderBy(QProject.project.projectNumber.asc())
-
-                    .fetch();
         }
+        if(StringUtils.isBlank(criteria) && status != null){
+            expr = QProject.project.status.eq(status);
+        }
+
+        return new JPAQuery<Project>(em)
+                .from(QProject.project)
+                .where(expr)
+                .offset(index * LIMIT_PROJECT)
+                .orderBy(QProject.project.projectNumber.asc())
+                .limit(LIMIT_PROJECT)
+                .fetch();
     }
 
     @Override
@@ -155,7 +141,7 @@ public class ProjectServiceImpl implements ProjectService {
         try {
             projectRepository.save(newProject);
         } catch (OptimisticLockingFailureException e) {
-            throw new ConcurrentUpdateException();
+            throw new ConcurrentUpdateException(e);
         }
     }
 }

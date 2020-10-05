@@ -1,6 +1,7 @@
 package vn.elca.training.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import vn.elca.training.model.dto.ProjectDtoForList;
 import vn.elca.training.model.exception.*;
@@ -33,10 +34,10 @@ public class ProjectController {
     @Autowired
     private EmployeeService employeeService;
 
-    @GetMapping("/query")
+    @PostMapping("/query")
     @ResponseBody
-    public List<ProjectDtoForList> query() {
-        return projectService.findAll()
+    public List<ProjectDtoForList> query(@RequestParam("index") Integer index) {
+        return projectService.findAll(index)
                 .stream()
                 .map(Mapper::projectToProjectDtoForAll)
                 .sorted(Comparator.comparing(ProjectDtoForList::getProjectNumber))
@@ -45,18 +46,13 @@ public class ProjectController {
 
     @PostMapping("/search")
     @ResponseBody
-    public List<ProjectDtoForList> search(@RequestParam(value = "status", defaultValue = "", required = false)
-                                                  StatusProject status, @RequestParam("criteria") String criteria) {
-        return ("".equals(criteria) && status == null)
-                ? projectService.findAll()
+    public List<ProjectDtoForList> search(
+            @RequestParam(value = "status", defaultValue = "", required = false) StatusProject status,
+            @RequestParam("criteria") String criteria,
+            @RequestParam("index") Integer index) {
+        return projectService.findByCriteria(criteria, status, index)
                 .stream()
                 .map(Mapper::projectToProjectDtoForAll)
-                .sorted(Comparator.comparing(ProjectDtoForList::getProjectNumber))
-                .collect(Collectors.toList())
-                : projectService.findByCriteria(criteria, status)
-                .stream()
-                .map(Mapper::projectToProjectDtoForAll)
-                .sorted(Comparator.comparing(ProjectDtoForList::getProjectNumber))
                 .collect(Collectors.toList());
     }
 
@@ -119,12 +115,16 @@ public class ProjectController {
         }
     }
 
-    @PostMapping("/update-project/{id}")
+    @PostMapping("/update-project")
     @ResponseBody
-    public void update(@PathVariable Long id, @RequestBody ProjectDto projectDto)
+    public void update(@RequestBody ProjectDto projectDto)
             throws ConcurrentUpdateException, StartDateGreaterThanEndDateException, VisaNotFoundException {
         Project project = Mapper.projectDtoToProject(projectDto, employeeService);
-        project.setId(id);
         projectService.updateProject(project);
+    }
+    @GetMapping("/get-size-projects")
+    @ResponseBody
+    public Long getSizeProjects(){
+        return projectService.getSizeProjects();
     }
 }

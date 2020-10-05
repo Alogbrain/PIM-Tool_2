@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewEncapsulation} from '@angular/core';
 import {Project} from '../project.model';
 import {ProjectService} from '../project.service';
-import {Subscription} from 'rxjs';
+import {range, Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {HttpClient} from '@angular/common/http';
 import {FormControl, FormGroup} from '@angular/forms';
@@ -16,12 +16,13 @@ import {TranslateService} from '@ngx-translate/core';
 export class ListProjectComponent implements OnInit, OnDestroy {
 
   projects: Project[] = [];
-  // subscription: Subscription;
   listProjectsForm: FormGroup;
   criteria = '';
   status = '';
   statuses = ['', 'New', 'Inprogress', 'Finished', 'Planned'];
   deleteList = [];
+  sizeProject = [];
+  indexPage = 0;
 
   constructor(private projectService: ProjectService,
               private http: HttpClient,
@@ -29,20 +30,10 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // this.subscription = this.projectService.projectsChanged.subscribe(
-    //   (projects: Project[]) => {
-    //     this.projects = projects;
-    //   }
-    // );
     this.initForm();
-    // this.fetchData();
     this.setCriteriaAndStatus();
-    this.projectService.searchProjects(this.criteria, this.status)
-      .subscribe(
-        value => {
-          this.projects = value;
-        }
-      );
+    this.pagination(this.indexPage);
+    this.getSizeProjects();
   }
 
   setCriteriaAndStatus(): void {
@@ -51,17 +42,19 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     this.status = param.status;
   }
 
-  fetchData(): void {
-    this.projectService.getProjects().subscribe(
+  getSizeProjects(): void {
+    this.projectService.getSizeProjects().subscribe(
       value => {
-        this.projects = value;
+        this.sizeProject = Array( Math.round(value / 5 + 0.49)).fill(1).map((x, i) => i + 1);
       });
   }
 
   onReset(): void {
     this.criteria = '';
     this.status = '';
-    this.fetchData();
+    this.projectService.setCriteriaAndStatus(this.criteria, this.status);
+    this.deleteList = [];
+    this.pagination(this.indexPage);
   }
 
   initForm(): void {
@@ -85,9 +78,9 @@ export class ListProjectComponent implements OnInit, OnDestroy {
     if (confirm(message + id + '?')) {
       this.projectService.deleteProject(id).subscribe(
         response => {
-          this.fetchData();
-        }, response => {
-          console.log('FAIL');
+          this.pagination(this.indexPage);
+          this.getSizeProjects();
+        }, reject => {
         }
       );
     }
@@ -95,11 +88,12 @@ export class ListProjectComponent implements OnInit, OnDestroy {
   }
 
   deleteListProjects(): void {
-    const message = this.translate.instant('alert-delete-project-list')
+    const message = this.translate.instant('alert-delete-project-list');
     if (confirm(message)) {
       this.projectService.deleteProjectList(this.deleteList).subscribe(
         response => {
-          this.fetchData();
+          this.pagination(this.indexPage);
+          this.getSizeProjects();
           this.deleteList = [];
         }, rej => {
           if (rej.error.errorName === 'DeleteProjectException') {
@@ -108,7 +102,6 @@ export class ListProjectComponent implements OnInit, OnDestroy {
         }
       );
     }
-    // this.deleteList = [];
   }
 
   onSubmit(): void {
@@ -116,10 +109,17 @@ export class ListProjectComponent implements OnInit, OnDestroy {
       this.status = '';
     }
     this.projectService.setCriteriaAndStatus(this.criteria, this.status);
-    this.projectService.searchProjects(this.criteria, this.status)
+    this.pagination(this.indexPage);
+  }
+
+  pagination(index): void {
+    this.indexPage = index;
+    // this.deleteList = [];
+    this.projectService.searchProjects(this.criteria, this.status, index)
       .subscribe(
         value => {
           this.projects = value;
+          // this.sizeProject = Array( Math.round(value.length / 5 + 0.5)).fill(1).map((x, i) => i + 1);
         }
       );
   }

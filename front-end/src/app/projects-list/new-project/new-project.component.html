@@ -1,5 +1,6 @@
 <div class="col-md-10" style="border-left: 1px solid gray;">
-  <div style="font-weight: bold; color: #666666" translate>{{!editMode ? 'title-new-project' : 'title-edit-project'}}</div>
+  <div style="font-weight: bold; color: #666666"
+       translate>{{!editMode ? 'title-new-project' : 'title-edit-project'}}</div>
   <hr>
   <form [formGroup]="projectForm" (ngSubmit)="onSubmit()" class="form-horizontal">
     <div *ngIf="isAlert" class="alert alert-danger alert-dismissible show ">
@@ -9,17 +10,21 @@
       </button>
     </div>
     <div class="form-group required">
-      <label for="projectNumber" class="col-md-2 control-label" style="padding-right: 0px" translate >project-number</label>
+      <label for="projectNumber" class="col-md-2 control-label" style="padding-right: 0px"
+             translate>project-number</label>
       <div class="col-md-3">
-        <input type="number" [attr.disabled]="editMode ? 'disabled' : null" style="text-align: end" id="projectNumber" class="form-control"
-               formControlName="number" pattern="^[1-9]+[0-9]*$" >
+        <input type="number" [attr.disabled]="editMode ? 'disabled' : null" style="text-align: end" id="projectNumber"
+               class="form-control"
+               formControlName="number" pattern="^[1-9]+[0-9]*$">
         <!--      *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched"-->
       </div>
       <span class="help-block" *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched">
         <span *ngIf="projectForm.get('number').errors?.numberProjectError" translate>
           number-project-already-exit
         </span>
-        <span *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched && !projectForm.get('number').errors.numberProjectError " translate>
+        <span
+          *ngIf="!projectForm.get('number').valid && projectForm.get('number').touched && !projectForm.get('number').errors.numberProjectError "
+          translate>
           missing-project-number
         </span>
       </span>
@@ -62,11 +67,15 @@
     <div class="form-group">
       <label for="member" class="col-md-2 control-label" translate>members</label>
       <div class="col-md-9">
-        <input type="text" id="member" class="form-control" formControlName="members">
 
+        <!--        <input type="text" id="member" class="form-control" formControlName="members">-->
+        <select id="member" class="form-control"  formControlName="members" multiple>
+          <option value="NNN">NNN</option>
+          <option value="TTT">TTT</option>
+        </select>
         <span *ngIf="projectForm.get('members').touched
          && projectForm.get('members').invalid">
-          <span  class="help-block"  *ngIf="projectForm.get('members').errors['membersError']" translate>
+          <span class="help-block" *ngIf="projectForm.get('members').errors['membersError']" translate>
             visa-not-exist <span>{{projectForm.get('members').errors['membersError']}}</span>
           </span>
         </span>
@@ -120,9 +129,9 @@
                 type="submit" translate>{{!editMode ? 'create-btn' : 'update-btn'}}</button>
       </div>
     </div>
-<!--    <button class="btn btn-default btn-create"-->
-<!--            type="submit" translate>{{!editMode ? 'create-btn' : 'update-btn'}}</button>-->
-<!--    <button class="btn btn-default btn-cancel" type="button" (click)="onCancel()" translate>cancel</button>-->
+    <!--    <button class="btn btn-default btn-create"-->
+    <!--            type="submit" translate>{{!editMode ? 'create-btn' : 'update-btn'}}</button>-->
+    <!--    <button class="btn btn-default btn-cancel" type="button" (click)="onCancel()" translate>cancel</button>-->
   </form>
 
 </div>

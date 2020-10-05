@@ -9,17 +9,6 @@ import {Group} from './group.model';
 @Injectable()
 export class ProjectService {
   projectsChanged = new Subject<Project[]>();
-
-  // private projects: Project[] = [
-  //   {
-  //     projectNumber: 1, name: 'John', customer: 'Anna', group: {id: 1}, members: ['Athur', 'Ben'], status: 'New',
-  //     startDate: '', endDate: ''
-  //   },
-  //   {
-  //     projectNumber: 2, name: 'Green', customer: 'Black', group: {id: 2}, members: ['Blue', 'Yellow'], status: 'New',
-  //     startDate: '', endDate: ''
-  //   },
-  // ];
   criteria = '';
   status = '';
   private projects: Project[] = [];
@@ -27,37 +16,30 @@ export class ProjectService {
   constructor(private http: HttpClient) {
   }
 
-  setCriteriaAndStatus(criteria, status): void{
+  setCriteriaAndStatus(criteria, status): void {
     this.criteria = criteria;
     this.status = status;
   }
+
   getCriteriaAndStatus(): any {
     return {criteria: this.criteria, status: this.status};
   }
-  getProjects(): Observable<Project[]> {
-    const url = 'api/projects/query';
-    // this.projectsChanged.next(this.projects);
-    return this.http.get<Project[]>(url);
-      // .pipe(map(responseData => {
-      //     const projectArray: Project[] = [];
-      //     for (const key of responseData) {
-      //       projectArray.push(key);
-      //     }
-      //     return projectArray;
-      //   })
-      // );
+
+  getSizeProjects(): Observable<number> {
+    const url = 'api/projects/get-size-projects';
+    return this.http.get<number>(url);
   }
 
-  searchProjects(criteria: string, status: string): Observable<Project[]> {
+  searchProjects(criteria: string, status: string, index: string): Observable<Project[]> {
     const url = 'api/projects/search';
     let params = new HttpParams();
     params = params.append('criteria', criteria);
     params = params.append('status', status);
+    params = params.append('index', index);
     return this.http.post<Project[]>(url, params);
   }
 
   getProject(index: number): Observable<Project> {
-    // return this.projects[index];
     const url = 'api/projects/queryById/' + index;
     return this.http.get<Project>(url);
   }
@@ -68,8 +50,6 @@ export class ProjectService {
   }
 
   addProject(project: Project): Observable<any> {
-    // this.projects.push(project);
-    // this.projectsChanged.next(this.projects.slice());
     const url = 'api/projects/create-project';
     return this.http.post(url, project).pipe(catchError(this.handleError));
   }
@@ -84,7 +64,7 @@ export class ProjectService {
 
   deleteProject(index): Observable<any> {
     const url = 'api/projects/delete-project';
-    let params = new HttpParams().append('id', index);
+    const params = new HttpParams().append('id', index);
     return this.http.post(url, params);
   }
 
@@ -93,10 +73,8 @@ export class ProjectService {
     return this.http.post(url, list);
   }
 
-  updateProject(index: number, newProject: Project): Observable<any> {
-    // this.projects[index] = newProject;
-    // this.projectsChanged.next(this.projects.slice());
-    const url = 'api/projects/update-project/' + index;
+  updateProject(newProject: Project): Observable<any> {
+    const url = 'api/projects/update-project';
     return this.http.post(url, newProject).pipe(catchError(this.handleError));
   }
 }

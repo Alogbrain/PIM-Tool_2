@@ -31,7 +31,7 @@ public class ApplicationController {
             private static final long serialVersionUID = -6883088231537577238L;
             {
                 put("title", "Project Management Tool");
-                put("message", String.format(message, projectService.findAll().size()));
+//                put("message", String.format(message, projectService.findAll().size()));
             }
         };
         return new ModelAndView("search", model);

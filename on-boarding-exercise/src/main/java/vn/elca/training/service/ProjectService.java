@@ -2,6 +2,7 @@ package vn.elca.training.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import vn.elca.training.model.dto.ProjectDtoForList;
 import vn.elca.training.model.entity.Project;
 import vn.elca.training.model.entity.StatusProject;
@@ -15,8 +16,9 @@ import vn.elca.training.model.exception.StartDateGreaterThanEndDateException;
  *
  */
 public interface ProjectService {
-    List<Project> findAll();
-    List<Project> findByCriteria(String name, StatusProject status);
+    List<Project> findAll(Integer index);
+    Long getSizeProjects();
+    List<Project> findByCriteria(String name, StatusProject status, Integer index);
     Project findById(Long id);
     Project findByProjectNumber(Integer projectNumber);
     void createNewProject(Project project) throws NumberExistException, StartDateGreaterThanEndDateException;
